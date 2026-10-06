@@ -938,8 +938,9 @@ impl BranchId {
         use BranchId::*;
         match self {
             Sprout | Overwinter => false,
-            Sapling | Ycash | Blossom | Heartwood | Canopy | Nu5 | Nu6 | Nu6_1 | Nu6_2
-            | Vault => true,
+            Sapling | Ycash | Blossom | Heartwood | Canopy | Nu5 | Nu6 | Nu6_1 | Nu6_2 | Vault => {
+                true
+            }
             #[cfg(zcash_unstable = "nu7")]
             BranchId::Nu7 => true,
             #[cfg(zcash_unstable = "zfuture")]
