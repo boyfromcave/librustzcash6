@@ -1,0 +1,13 @@
+# Copyright (c) 2026 The Ycash developers
+# Distributed under the MIT software license, see the accompanying
+# file COPYING or https://www.opensource.org/licenses/mit-license.php .
+#
+# zizmor configuration for the Ycash fork. ycash-fork.yml (the fork's CI) is zizmor-clean with
+# no entry here. The entries are upstream librustzcash's own workflows, kept as upstream wrote
+# them except for the scoping in each file's "Ycash (2026-10-06)" note: their tag-pinned
+# toolchain/mdbook actions (`dtolnay/rust-toolchain@stable` and the like) are upstream's choice.
+rules:
+  unpinned-uses:
+    ignore: [ci.yml, audits.yml, book.yml, mutants.yml]
+  dependabot-cooldown:
+    ignore: [dependabot.yml]

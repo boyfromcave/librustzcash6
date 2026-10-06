@@ -2,6 +2,10 @@ name: Audits
 
 on:
   pull_request:
+    # Ycash (2026-10-06): scoped to upstream's `main` (this fork has none, so it never runs here).
+    # The fork's CI is ycash-fork.yml: cargo vet runs against upstream's
+    # supply-chain store (zcash/rust-ecosystem), which the fork does not maintain.
+    branches: main
   push:
     branches: main
 

@@ -13,6 +13,8 @@ permissions:
 jobs:
   trigger:
     name: Trigger
+    # Ycash (2026-10-06): dispatches into zcash/rust-ecosystem with upstream's token; upstream only.
+    if: github.repository_owner == 'zcash'
     runs-on: ubuntu-latest
     steps:
       - name: Trigger aggregation in zcash/rust-ecosystem

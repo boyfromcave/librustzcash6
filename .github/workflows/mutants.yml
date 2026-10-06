@@ -45,6 +45,10 @@ concurrency:
 jobs:
   mutants:
     name: Mutation testing of ${{ matrix.package }}
+    # Ycash (2026-10-06): the weekly schedule mutates all 16 packages, upstream's code, in upstream's
+    # repository only; a manual dispatch still runs it here. The fork's weekly mutation run covers
+    # its own delta (ycash-fork.yml, job mutants).
+    if: github.repository_owner == 'zcash' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false

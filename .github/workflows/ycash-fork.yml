@@ -1,0 +1,222 @@
+# Copyright (c) 2026 The Ycash developers
+# Distributed under the MIT software license, see the accompanying
+# file COPYING or https://www.opensource.org/licenses/mit-license.php .
+#
+# CI for the Ycash fork of librustzcash (boyfromcave/librustzcash6): the crates ycashd 6.20.0
+# takes from this repository through ycash6/Cargo.toml's [patch.crates-io] (zcash_protocol,
+# zcash_primitives, zcash_transparent, zcash_address, zcash_encoding, f4jumble), tested with
+# the features ycash6 enables; a workspace check so a new NetworkUpgrade/BranchId arm cannot
+# break a crate the node does not build (the Vault commit touched zcash_client_backend and
+# zcash_extensions for that reason); clippy and rustfmt; weekly mutation testing of the fork's
+# own delta.
+#
+# Upstream's workflows (ci.yml, audits.yml, mutants.yml, ...) stay in the tree, scoped to upstream
+# (their "Ycash (2026-10-06)" notes): on fork branches their ~40-job matrix (Windows, macOS,
+# wasm, no_std, NU7, protobuf regeneration) tested features and targets ycashd never builds.
+#
+# Triggers follow the node lines (wt/BRIEFING-upgrade.md "CI/CD design"): push and
+# pull_request on the fork's branches (one anchor), workflow_dispatch, and a weekly schedule that
+# only dispatches the weekly tier on each branch (a scheduled run executes the default branch's
+# copy of a workflow, feature/yellowback here, which is a zero-delta fork).
+name: ycash fork tests
+
+on:
+  push:
+    branches: &fork-branches
+      - upgrade/vault
+      - harden/yellowback
+      - feature/yellowback
+  pull_request:
+    branches: *fork-branches
+  schedule:
+    - cron: '0 4 * * 0'
+  workflow_dispatch:
+    inputs:
+      tier:
+        description: 'push (tests, checks, lint) or weekly (mutation testing of the fork delta)'
+        type: choice
+        options: [push, weekly]
+        default: push
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ycash-fork-${{ github.ref }}-${{ github.event_name }}-${{ inputs.tier || 'push' }}
+  cancel-in-progress: ${{ github.event_name == 'push' || github.event_name == 'pull_request' }}
+
+env:
+  CARGO_TERM_COLOR: always
+  # The features ycash6/Cargo.toml enables on each patched crate (its [dependencies] and
+  # [dev-dependencies]); the others take their defaults.
+  PROTOCOL_FEATURES: local-consensus
+  PRIMITIVES_FEATURES: temporary-zcashd transparent-inputs test-dependencies
+
+jobs:
+  schedule-dispatch:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 5
+    permissions:
+      actions: write
+    strategy:
+      fail-fast: false
+      matrix:
+        branch: *fork-branches
+    steps:
+      - name: Dispatch the weekly tier on the branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ matrix.branch }}
+        run: |
+          gh workflow run ycash-fork.yml --repo "$GITHUB_REPOSITORY" --ref "$BRANCH" -f tier=weekly \
+            || echo "::warning::could not dispatch the weekly tier on $BRANCH (no such branch, or no ycash-fork.yml there)"
+
+  test:
+    name: test (the crates ycash6 patches in)
+    if: github.event_name != 'schedule' && (inputs.tier || 'push') == 'push'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - id: toolchain
+        name: Read the toolchain pin (rust-toolchain.toml)
+        run: |
+          chan=$(sed -n 's/^channel = "\(.*\)"/\1/p' rust-toolchain.toml)
+          test -n "$chan"
+          echo "channel=$chan" >> "$GITHUB_OUTPUT"
+      - uses: dtolnay/rust-toolchain@7e38f4b43b4db5c8dd498af069a4f6196df1d067 # v1 (master, 2026-10-01)
+        with:
+          toolchain: ${{ steps.toolchain.outputs.channel }}
+      # Cargo registry/git and target/, keyed by the action on Cargo.lock, the toolchain and the
+      # job (it restores the newest entry of the same job and toolchain on a lock change).
+      - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
+        with:
+          shared-key: ycash-fork-test
+      - name: zcash_protocol (local-consensus; the Vault NetworkUpgrade / BranchId)
+        run: cargo test --locked -p zcash_protocol --features "$PROTOCOL_FEATURES"
+      - name: zcash_primitives (temporary-zcashd, transparent-inputs, test-dependencies)
+        if: ${{ !cancelled() }}
+        run: cargo test --locked -p zcash_primitives --features "$PRIMITIVES_FEATURES"
+      - name: zcash_transparent, zcash_address, zcash_encoding, f4jumble
+        if: ${{ !cancelled() }}
+        run: cargo test --locked -p zcash_transparent -p zcash_address -p zcash_encoding -p f4jumble
+      - name: Working directory is clean
+        if: ${{ !cancelled() }}
+        run: git diff --exit-code
+
+  check:
+    name: check (whole workspace, all features, tests)
+    if: github.event_name != 'schedule' && (inputs.tier || 'push') == 'push'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - id: toolchain
+        name: Read the toolchain pin (rust-toolchain.toml)
+        run: |
+          chan=$(sed -n 's/^channel = "\(.*\)"/\1/p' rust-toolchain.toml)
+          test -n "$chan"
+          echo "channel=$chan" >> "$GITHUB_OUTPUT"
+      - uses: dtolnay/rust-toolchain@7e38f4b43b4db5c8dd498af069a4f6196df1d067 # v1 (master, 2026-10-01)
+        with:
+          toolchain: ${{ steps.toolchain.outputs.channel }}
+      - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
+        with:
+          shared-key: ycash-fork-check
+      - name: cargo check --workspace --all-features --tests
+        # Every crate, not only the six: an exhaustive match over NetworkUpgrade/BranchId anywhere
+        # in the workspace must learn each new arm.
+        run: cargo check --locked --workspace --all-features --tests
+
+  lint:
+    name: clippy and rustfmt
+    if: github.event_name != 'schedule' && (inputs.tier || 'push') == 'push'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - id: toolchain
+        name: Read the toolchain pin (rust-toolchain.toml)
+        run: |
+          chan=$(sed -n 's/^channel = "\(.*\)"/\1/p' rust-toolchain.toml)
+          test -n "$chan"
+          echo "channel=$chan" >> "$GITHUB_OUTPUT"
+      - uses: dtolnay/rust-toolchain@7e38f4b43b4db5c8dd498af069a4f6196df1d067 # v1 (master, 2026-10-01)
+        with:
+          toolchain: ${{ steps.toolchain.outputs.channel }}
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
+        with:
+          shared-key: ycash-fork-lint
+      - name: rustfmt
+        run: cargo fmt --all -- --check
+      - name: clippy -D warnings (the six crates ycash6 patches in, with its features)
+        if: ${{ !cancelled() }}
+        run: |
+          cargo clippy --locked --all-targets -p zcash_protocol --features "$PROTOCOL_FEATURES" -- -D warnings
+          cargo clippy --locked --all-targets -p zcash_primitives --features "$PRIMITIVES_FEATURES" -- -D warnings
+          cargo clippy --locked --all-targets -p zcash_transparent -p zcash_address -p zcash_encoding -p f4jumble -- -D warnings
+
+  gate:
+    name: push tier
+    needs: [test, check, lint]
+    if: ${{ always() && github.event_name != 'schedule' && (inputs.tier || 'push') == 'push' }}
+    runs-on: ubuntu-22.04
+    timeout-minutes: 5
+    steps:
+      - name: Every push-tier job succeeded
+        env:
+          NEEDS: ${{ toJSON(needs) }}
+        run: |
+          bad=$(echo "$NEEDS" | jq -r 'to_entries[] | select(.value.result != "success") | "\(.key)=\(.value.result)"')
+          test -z "$bad" || { echo "not green: $bad"; exit 1; }
+
+  # Weekly: cargo-mutants over the lines this fork changed against its pristine pin
+  # (librustzcash6-legacy = miodragpop/librustzcash ycashd-v6.20.0 @ ec525fae), in zcash_protocol
+  # and zcash_primitives. Upstream's mutants.yml mutates all 16 packages; that is upstream's job.
+  mutants:
+    if: github.event_name == 'workflow_dispatch' && inputs.tier == 'weekly'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - id: toolchain
+        name: Read the toolchain pin (rust-toolchain.toml)
+        run: |
+          chan=$(sed -n 's/^channel = "\(.*\)"/\1/p' rust-toolchain.toml)
+          test -n "$chan"
+          echo "channel=$chan" >> "$GITHUB_OUTPUT"
+      - uses: dtolnay/rust-toolchain@7e38f4b43b4db5c8dd498af069a4f6196df1d067 # v1 (master, 2026-10-01)
+        with:
+          toolchain: ${{ steps.toolchain.outputs.channel }}
+      - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
+        with:
+          shared-key: ycash-fork-test
+          save-if: 'false'
+      - uses: taiki-e/install-action@74e87cbfa15a59692b158178d8905a61bf6fca95 # v2.75.20
+        with:
+          tool: cargo-mutants
+      - name: Mutate the fork's delta
+        run: |
+          git fetch --no-tags origin +refs/heads/librustzcash6-legacy:refs/remotes/origin/librustzcash6-legacy
+          git diff origin/librustzcash6-legacy...HEAD -- components/zcash_protocol zcash_primitives > "$RUNNER_TEMP/fork.diff"
+          if [ ! -s "$RUNNER_TEMP/fork.diff" ]; then echo "no fork delta in zcash_protocol / zcash_primitives"; exit 0; fi
+          cargo mutants --in-diff "$RUNNER_TEMP/fork.diff" -p zcash_protocol -p zcash_primitives \
+            --features zcash_protocol/local-consensus -vV --in-place
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: mutants-fork-delta
+          path: mutants.out/
+          if-no-files-found: ignore
+          retention-days: 30

@@ -1,0 +1,18 @@
+# Copyright (c) 2026 The Ycash developers
+# Distributed under the MIT software license, see the accompanying
+# file COPYING or https://www.opensource.org/licenses/mit-license.php .
+#
+# actionlint configuration for the Ycash fork. ycash-fork.yml is actionlint/shellcheck-clean with
+# no entry here; the ignores are upstream's findings in upstream's workflows (matrix keys that
+# actionlint cannot see through `include:`, shellcheck style in their scripts), recorded rather
+# than edited.
+paths:
+  .github/workflows/ci.yml:
+    ignore:
+      - 'property "extra_flags" is not defined'
+      - 'property "target" is not defined'
+      - 'SC2086:'
+      - 'SC2046:'
+  .github/workflows/aggregate-audits.yml:
+    ignore:
+      - 'SC2215:'
