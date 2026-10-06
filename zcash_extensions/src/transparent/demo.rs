@@ -515,6 +515,7 @@ mod tests {
                 NetworkUpgrade::Nu6 => Some(BlockHeight::from_u32(1_300_000)),
                 NetworkUpgrade::Nu6_1 => Some(BlockHeight::from_u32(1_400_000)),
                 NetworkUpgrade::Nu6_2 => Some(BlockHeight::from_u32(1_500_000)),
+                NetworkUpgrade::Vault => None,
                 NetworkUpgrade::ZFuture => Some(BlockHeight::from_u32(1_600_000)),
             }
         }

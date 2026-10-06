@@ -1474,6 +1474,7 @@ impl TestBuilder<(), ()> {
         nu6: None,
         nu6_1: None,
         nu6_2: None,
+        vault: None,
         #[cfg(zcash_unstable = "nu7")]
         nu7: None,
         #[cfg(zcash_unstable = "zfuture")]

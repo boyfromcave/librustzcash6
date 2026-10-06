@@ -239,6 +239,8 @@ impl TxVersion {
             BranchId::Nu6 => TxVersion::V5,
             BranchId::Nu6_1 => TxVersion::V5,
             BranchId::Nu6_2 => TxVersion::V5,
+            // Ycash activates Vault without NU5: transactions stay v4.
+            BranchId::Vault => TxVersion::V4,
             #[cfg(zcash_unstable = "nu7")]
             BranchId::Nu7 => TxVersion::V6,
             #[cfg(zcash_unstable = "zfuture")]
@@ -257,7 +259,8 @@ impl TxVersion {
             TxVersion::V3 => consensus_branch_id == Overwinter,
             TxVersion::V4 => match consensus_branch_id {
                 Sprout | Overwinter => false,
-                Sapling | Ycash | Blossom | Heartwood | Canopy | Nu5 | Nu6 | Nu6_1 | Nu6_2 => true,
+                Sapling | Ycash | Blossom | Heartwood | Canopy | Nu5 | Nu6 | Nu6_1 | Nu6_2
+                | Vault => true,
                 #[cfg(zcash_unstable = "nu7")]
                 Nu7 => false, // ZIP 2003
                 #[cfg(zcash_unstable = "zfuture")]
@@ -265,7 +268,7 @@ impl TxVersion {
             },
             TxVersion::V5 => match consensus_branch_id {
                 Sprout | Overwinter | Sapling | Ycash | Blossom | Heartwood | Canopy => false,
-                Nu5 | Nu6 | Nu6_1 | Nu6_2 => true,
+                Nu5 | Nu6 | Nu6_1 | Nu6_2 | Vault => true,
                 #[cfg(zcash_unstable = "nu7")]
                 Nu7 => true,
                 #[cfg(zcash_unstable = "zfuture")]
@@ -274,13 +277,13 @@ impl TxVersion {
             #[cfg(zcash_unstable = "nu7")]
             TxVersion::V6 => match consensus_branch_id {
                 Sprout | Overwinter | Sapling | Ycash | Blossom | Heartwood | Canopy | Nu5
-                | Nu6 | Nu6_1 | Nu6_2 => false,
+                | Nu6 | Nu6_1 | Nu6_2 | Vault => false,
                 Nu7 => true, // ZIP 230 or ZIP 248, whichever is chosen for activation
             },
             #[cfg(zcash_unstable = "zfuture")]
             TxVersion::ZFuture => match consensus_branch_id {
                 Sprout | Overwinter | Sapling | Ycash | Blossom | Heartwood | Canopy | Nu5
-                | Nu6 | Nu6_1 | Nu6_2 => false,
+                | Nu6 | Nu6_1 | Nu6_2 | Vault => false,
                 ZFuture => true,
             },
         }
@@ -963,7 +966,7 @@ impl Transaction {
                 | BranchId::Nu5
                 | BranchId::Nu6
                 | BranchId::Nu6_1 => ProofSizeEnforcement::Unenforced,
-                BranchId::Nu6_2 => ProofSizeEnforcement::Strict,
+                BranchId::Nu6_2 | BranchId::Vault => ProofSizeEnforcement::Strict,
                 #[cfg(zcash_unstable = "nu7")]
                 BranchId::Nu7 => ProofSizeEnforcement::Strict,
                 #[cfg(zcash_unstable = "zfuture")]
@@ -1361,6 +1364,7 @@ pub mod testing {
             BranchId::Nu6 => Just(TxVersion::V5).boxed(),
             BranchId::Nu6_1 => Just(TxVersion::V5).boxed(),
             BranchId::Nu6_2 => Just(TxVersion::V5).boxed(),
+            BranchId::Vault => Just(TxVersion::V4).boxed(),
             #[cfg(zcash_unstable = "nu7")]
             BranchId::Nu7 => Just(TxVersion::V6).boxed(),
             #[cfg(zcash_unstable = "zfuture")]

@@ -497,6 +497,8 @@ impl Parameters for MainNetwork {
             NetworkUpgrade::Nu6 => None,
             NetworkUpgrade::Nu6_1 => None,
             NetworkUpgrade::Nu6_2 => None,
+            // The Ycash vault primitive: not yet scheduled.
+            NetworkUpgrade::Vault => None,
             #[cfg(zcash_unstable = "nu7")]
             NetworkUpgrade::Nu7 => None,
             #[cfg(zcash_unstable = "zfuture")]
@@ -534,6 +536,8 @@ impl Parameters for TestNetwork {
             NetworkUpgrade::Nu6 => None,
             NetworkUpgrade::Nu6_1 => None,
             NetworkUpgrade::Nu6_2 => None,
+            // The Ycash vault primitive: not yet scheduled.
+            NetworkUpgrade::Vault => None,
             #[cfg(zcash_unstable = "nu7")]
             NetworkUpgrade::Nu7 => None,
             #[cfg(zcash_unstable = "zfuture")]
@@ -616,6 +620,9 @@ pub enum NetworkUpgrade {
     ///
     /// [Nu6.2]: https://z.cash/upgrade/nu6.2/
     Nu6_2,
+    /// The Ycash Vault network upgrade (the vault primitive: BIP68/BIP112
+    /// relative timelocks and signer-set opcodes).
+    Vault,
     /// The [Nu7 (proposed)] network upgrade.
     ///
     /// [Nu7 (proposed)]: https://z.cash/upgrade/nu7/
@@ -646,6 +653,7 @@ impl fmt::Display for NetworkUpgrade {
             NetworkUpgrade::Nu6 => write!(f, "Nu6"),
             NetworkUpgrade::Nu6_1 => write!(f, "Nu6.1"),
             NetworkUpgrade::Nu6_2 => write!(f, "Nu6.2"),
+            NetworkUpgrade::Vault => write!(f, "Vault"),
             #[cfg(zcash_unstable = "nu7")]
             NetworkUpgrade::Nu7 => write!(f, "Nu7"),
             #[cfg(zcash_unstable = "zfuture")]
@@ -667,6 +675,7 @@ impl NetworkUpgrade {
             NetworkUpgrade::Nu6 => BranchId::Nu6,
             NetworkUpgrade::Nu6_1 => BranchId::Nu6_1,
             NetworkUpgrade::Nu6_2 => BranchId::Nu6_2,
+            NetworkUpgrade::Vault => BranchId::Vault,
             #[cfg(zcash_unstable = "nu7")]
             NetworkUpgrade::Nu7 => BranchId::Nu7,
             #[cfg(zcash_unstable = "zfuture")]
@@ -690,6 +699,7 @@ const UPGRADES_IN_ORDER: &[NetworkUpgrade] = &[
     NetworkUpgrade::Nu6,
     NetworkUpgrade::Nu6_1,
     NetworkUpgrade::Nu6_2,
+    NetworkUpgrade::Vault,
     #[cfg(zcash_unstable = "nu7")]
     NetworkUpgrade::Nu7,
 ];
@@ -745,6 +755,8 @@ pub enum BranchId {
     Nu6_1,
     /// The consensus rules deployed by [`NetworkUpgrade::Nu6_2`].
     Nu6_2,
+    /// The consensus rules deployed by [`NetworkUpgrade::Vault`].
+    Vault,
     /// The consensus rules to be deployed by [`NetworkUpgrade::Nu7`].
     #[cfg(zcash_unstable = "nu7")]
     Nu7,
@@ -775,6 +787,7 @@ impl TryFrom<u32> for BranchId {
             0xc8e7_1055 => Ok(BranchId::Nu6),
             0x4dec_4df0 => Ok(BranchId::Nu6_1),
             0x5437_f330 => Ok(BranchId::Nu6_2),
+            0x6d5b_7a31 => Ok(BranchId::Vault),
             #[cfg(zcash_unstable = "nu7")]
             0xffff_ffff => Ok(BranchId::Nu7),
             #[cfg(zcash_unstable = "zfuture")]
@@ -798,6 +811,7 @@ impl From<BranchId> for u32 {
             BranchId::Nu6 => 0xc8e7_1055,
             BranchId::Nu6_1 => 0x4dec_4df0,
             BranchId::Nu6_2 => 0x5437_f330,
+            BranchId::Vault => 0x6d5b_7a31,
             #[cfg(zcash_unstable = "nu7")]
             BranchId::Nu7 => 0xffff_ffff,
             #[cfg(zcash_unstable = "zfuture")]
@@ -879,6 +893,9 @@ impl BranchId {
                 .map(|lower| (lower, params.activation_height(NetworkUpgrade::Nu6_2))),
             BranchId::Nu6_2 => params
                 .activation_height(NetworkUpgrade::Nu6_2)
+                .map(|lower| (lower, params.activation_height(NetworkUpgrade::Vault))),
+            BranchId::Vault => params
+                .activation_height(NetworkUpgrade::Vault)
                 .map(|lower| {
                     #[cfg(zcash_unstable = "nu7")]
                     let upper = params.activation_height(NetworkUpgrade::Nu7);
@@ -908,7 +925,7 @@ impl BranchId {
         use BranchId::*;
         match self {
             Sprout | Overwinter | Sapling | Ycash | Blossom | Heartwood | Canopy | Nu5 | Nu6
-            | Nu6_1 | Nu6_2 => true,
+            | Nu6_1 | Nu6_2 | Vault => true,
             #[cfg(zcash_unstable = "nu7")]
             BranchId::Nu7 => false,
             #[cfg(zcash_unstable = "zfuture")]
@@ -921,7 +938,8 @@ impl BranchId {
         use BranchId::*;
         match self {
             Sprout | Overwinter => false,
-            Sapling | Ycash | Blossom | Heartwood | Canopy | Nu5 | Nu6 | Nu6_1 | Nu6_2 => true,
+            Sapling | Ycash | Blossom | Heartwood | Canopy | Nu5 | Nu6 | Nu6_1 | Nu6_2
+            | Vault => true,
             #[cfg(zcash_unstable = "nu7")]
             BranchId::Nu7 => true,
             #[cfg(zcash_unstable = "zfuture")]
@@ -934,7 +952,9 @@ impl BranchId {
         use BranchId::*;
         match self {
             Sprout | Overwinter | Sapling | Ycash | Blossom | Heartwood | Canopy => false,
-            Nu5 | Nu6 | Nu6_1 | Nu6_2 => true,
+            // Vault does not itself bring Orchard (Ycash activates it without
+            // NU5); Orchard is present only where ycashd's NU5 gate admits it.
+            Nu5 | Nu6 | Nu6_1 | Nu6_2 | Vault => true,
             #[cfg(zcash_unstable = "nu7")]
             BranchId::Nu7 => true,
             #[cfg(zcash_unstable = "zfuture")]
@@ -963,6 +983,7 @@ pub mod testing {
             BranchId::Nu6,
             BranchId::Nu6_1,
             BranchId::Nu6_2,
+            BranchId::Vault,
             #[cfg(zcash_unstable = "nu7")]
             BranchId::Nu7,
             #[cfg(zcash_unstable = "zfuture")]
@@ -1028,6 +1049,8 @@ mod tests {
     fn branch_id_from_u32() {
         assert_eq!(BranchId::try_from(0), Ok(BranchId::Sprout));
         assert!(BranchId::try_from(1).is_err());
+        assert_eq!(BranchId::try_from(0x6d5b_7a31), Ok(BranchId::Vault));
+        assert_eq!(u32::from(BranchId::Vault), 0x6d5b_7a31);
     }
 
     #[test]

@@ -31,6 +31,7 @@ use crate::consensus::{BlockHeight, NetworkType, NetworkUpgrade, Parameters};
 ///         nu6: Some(BlockHeight::from_u32(1)),
 ///         nu6_1: Some(BlockHeight::from_u32(1)),
 ///         nu6_2: Some(BlockHeight::from_u32(1)),
+///         vault: None,
 ///     };
 ///     ```
 ///     
@@ -46,6 +47,7 @@ pub struct LocalNetwork {
     pub nu6: Option<BlockHeight>,
     pub nu6_1: Option<BlockHeight>,
     pub nu6_2: Option<BlockHeight>,
+    pub vault: Option<BlockHeight>,
     #[cfg(zcash_unstable = "nu7")]
     pub nu7: Option<BlockHeight>,
     #[cfg(zcash_unstable = "zfuture")]
@@ -70,6 +72,7 @@ impl Parameters for LocalNetwork {
             NetworkUpgrade::Nu6 => self.nu6,
             NetworkUpgrade::Nu6_1 => self.nu6_1,
             NetworkUpgrade::Nu6_2 => self.nu6_2,
+            NetworkUpgrade::Vault => self.vault,
             #[cfg(zcash_unstable = "nu7")]
             NetworkUpgrade::Nu7 => self.nu7,
             #[cfg(zcash_unstable = "zfuture")]
@@ -81,7 +84,7 @@ impl Parameters for LocalNetwork {
 #[cfg(test)]
 mod tests {
     use crate::{
-        consensus::{BlockHeight, NetworkConstants, NetworkUpgrade, Parameters},
+        consensus::{BlockHeight, BranchId, NetworkConstants, NetworkUpgrade, Parameters},
         constants,
         local_consensus::LocalNetwork,
     };
@@ -115,6 +118,7 @@ mod tests {
             nu6: Some(expected_nu6),
             nu6_1: Some(expected_nu6_1),
             nu6_2: Some(expected_nu6_2),
+            vault: None,
             #[cfg(zcash_unstable = "nu7")]
             nu7: Some(expected_nu7),
             #[cfg(zcash_unstable = "zfuture")]
@@ -165,6 +169,7 @@ mod tests {
             nu6: Some(expected_nu6),
             nu6_1: Some(expected_nu6_1),
             nu6_2: Some(expected_nu6_2),
+            vault: None,
             #[cfg(zcash_unstable = "nu7")]
             nu7: Some(expected_nu7),
             #[cfg(zcash_unstable = "zfuture")]
@@ -220,6 +225,37 @@ mod tests {
     }
 
     #[test]
+    fn regtest_vault_without_nu5() {
+        // Ycash regtest activates Vault on top of Overwinter + Sapling only.
+        let regtest = LocalNetwork {
+            overwinter: Some(BlockHeight::from_u32(1)),
+            sapling: Some(BlockHeight::from_u32(1)),
+            ycash: None,
+            blossom: None,
+            heartwood: None,
+            canopy: None,
+            nu5: None,
+            nu6: None,
+            nu6_1: None,
+            nu6_2: None,
+            vault: Some(BlockHeight::from_u32(10)),
+            #[cfg(zcash_unstable = "nu7")]
+            nu7: None,
+            #[cfg(zcash_unstable = "zfuture")]
+            z_future: None,
+        };
+        assert_eq!(
+            BranchId::for_height(&regtest, BlockHeight::from_u32(9)),
+            BranchId::Sapling
+        );
+        assert_eq!(
+            BranchId::for_height(&regtest, BlockHeight::from_u32(10)),
+            BranchId::Vault
+        );
+        assert_eq!(u32::from(BranchId::Vault), 0x6d5b_7a31);
+    }
+
+    #[test]
     fn regtests_constants() {
         let expected_overwinter = BlockHeight::from_u32(1);
         let expected_sapling = BlockHeight::from_u32(2);
@@ -248,6 +284,7 @@ mod tests {
             nu6: Some(expected_nu6),
             nu6_1: Some(expected_nu6_1),
             nu6_2: Some(expected_nu6_2),
+            vault: None,
             #[cfg(zcash_unstable = "nu7")]
             nu7: Some(expected_nu7),
             #[cfg(zcash_unstable = "zfuture")]
