@@ -16,7 +16,7 @@ use zcash_primitives::transaction::components::GROTH_PROOF_SIZE;
 
 use crate::{OutputParameters, SpendParameters, load_parameters, parse_parameters};
 
-#[cfg(feature = "local-prover")]
+#[cfg(all(feature = "local-prover", not(target_arch = "wasm32")))]
 use crate::{SAPLING_OUTPUT_NAME, SAPLING_SPEND_NAME, default_params_folder};
 
 /// An implementation of [`SpendProver`] and [`OutputProver`] using Sapling Spend and
@@ -98,7 +98,7 @@ impl LocalTxProver {
     ///
     /// This function will panic if the parameters in the default local location do not
     /// have the expected hashes.
-    #[cfg(feature = "local-prover")]
+    #[cfg(all(feature = "local-prover", not(target_arch = "wasm32")))]
     pub fn with_default_location() -> Option<Self> {
         let params_dir = default_params_folder()?;
         let (spend_path, output_path) = if params_dir.exists() {

@@ -22,7 +22,7 @@ use std::fs::File;
 use std::io::{self, BufReader};
 use std::path::Path;
 
-#[cfg(feature = "directories")]
+#[cfg(all(feature = "directories", not(target_arch = "wasm32")))]
 use std::path::PathBuf;
 
 pub mod circuit;
@@ -71,7 +71,7 @@ pub struct SaplingParameterPaths {
 }
 
 /// Returns the default folder that the Zcash proving parameters are located in.
-#[cfg(feature = "directories")]
+#[cfg(all(feature = "directories", not(target_arch = "wasm32")))]
 pub fn default_params_folder() -> Option<PathBuf> {
     #[cfg(windows)]
     {
