@@ -149,7 +149,7 @@ subtle = { version = "2.2.3", default-features = false }
 # - Warning: One of the downstream consumers requires that SQLite be available through
 #   CocoaPods, due to being bound to React Native. We need to ensure that the SQLite
 #   version required for `rusqlite` is a version that is available through CocoaPods.
-rusqlite = { version = "0.37", features = ["bundled"] }
+rusqlite = { version = "0.38", features = ["bundled", "fallible_uint"] }
 schemerz = "0.2"
 schemerz-rusqlite = "0.370"
 time = { version = "0.3.22", default-features = false }
@@ -170,11 +170,11 @@ incrementalmerkletree-testing = "0.3"
 # Tor
 # - `arti-client` depends on `rusqlite`, and a version mismatch there causes a compilation
 #   failure due to incompatible `libsqlite3-sys` versions.
-arti-client = { version = "0.35", default-features = false, features = ["compression", "rustls", "tokio"] }
+arti-client = { version = "0.39", default-features = false, features = ["compression", "rustls", "tokio"] }
 dynosaur = "0.3"
-fs-mistrust = "0.12"
+fs-mistrust = "0.13"
 tokio = "1"
-tor-rtcompat = "0.35"
+tor-rtcompat = "0.39"
 tower = "0.5"
 trait-variant = "0.1"
 
@@ -228,3 +228,9 @@ unexpected_cfgs = { level = "warn", check-cfg = [
   'cfg(zcash_unstable, values("zfuture", "nu7"))',
   'cfg(live_network_tests)',
 ] }
+
+[patch.crates-io]
+# web (yew/web plan §2): rusqlite 0.38 is the first release with a wasm32-unknown-unknown backend
+# (sqlite-wasm-rs); schemerz-rusqlite has no 0.380 release, so the 0.370 source with its rusqlite
+# requirement raised is carried here. Consumers by git must repeat this patch in their own root manifest.
+schemerz-rusqlite = { path = "components/schemerz-rusqlite" }
