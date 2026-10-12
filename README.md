@@ -1,4 +1,24 @@
-# Zcash Rust crates
+# Zcash Rust crates, Ycash fork for the vault upgrade
+
+This is the librustzcash that the Ycash 6.20 node line
+([boyfromcave/ycash6](https://github.com/boyfromcave/ycash6)) builds against. It starts from
+[miodragpop/librustzcash](https://github.com/miodragpop/librustzcash) at `ec525fae`
+(branch `ycashd-v6.20.0`), which already carries Ycash's consensus and address parameters, and
+adds one thing on the `upgrade/vault` branch: the proposed **vault network upgrade**, as
+`NetworkUpgrade::Vault` with consensus branch ID `BranchId::Vault = 0x6d5b7a31`, so the Rust
+side recognises the new epoch. Nothing else in the crates changes; the post-quantum layer of the
+vault upgrade lives entirely in the node and needs no change here.
+
+> **Status: in development.** The vault upgrade has no activation height on mainnet or testnet.
+
+`ycash6`'s `Cargo.toml` pins every `zcash_*` crate to this repository at a fixed revision. The
+vault system, Ycash Yellowback (YED) and the bridges built on it are described in the
+[project workspace](https://github.com/boyfromcave/yellowback). See the fork's changes with
+`git diff librustzcash6-legacy...upgrade/vault`.
+
+The rest of this file is the upstream README.
+
+## Zcash Rust crates
 
 This repository contains a (work-in-progress) set of Rust crates for working
 with Zcash.
