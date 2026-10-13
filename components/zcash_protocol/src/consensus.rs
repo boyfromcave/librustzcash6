@@ -952,10 +952,11 @@ impl BranchId {
     pub fn has_orchard(&self) -> bool {
         use BranchId::*;
         match self {
-            Sprout | Overwinter | Sapling | Ycash | Blossom | Heartwood | Canopy => false,
-            // Vault does not itself bring Orchard (Ycash activates it without
-            // NU5); Orchard is present only where ycashd's NU5 gate admits it.
-            Nu5 | Nu6 | Nu6_1 | Nu6_2 | Vault => true,
+            // Vault is a v4/Sapling-era upgrade on Ycash: no Orchard, no v5
+            // (ycashd ContextualCheckTransaction rejects a non-Sapling version
+            // group under Vault, quantum spec rule R-A3).
+            Sprout | Overwinter | Sapling | Ycash | Blossom | Heartwood | Canopy | Vault => false,
+            Nu5 | Nu6 | Nu6_1 | Nu6_2 => true,
             #[cfg(zcash_unstable = "nu7")]
             BranchId::Nu7 => true,
             #[cfg(zcash_unstable = "zfuture")]
@@ -1052,6 +1053,14 @@ mod tests {
         assert!(BranchId::try_from(1).is_err());
         assert_eq!(BranchId::try_from(0x6d5b_7a31), Ok(BranchId::Vault));
         assert_eq!(u32::from(BranchId::Vault), 0x6d5b_7a31);
+    }
+
+    #[test]
+    fn vault_is_sapling_era_without_orchard() {
+        // Quantum spec R-A3: Vault is a v4/Sapling-era upgrade on Ycash (no Orchard, no v5).
+        assert!(!BranchId::Vault.has_orchard());
+        assert!(BranchId::Vault.has_sapling());
+        assert!(BranchId::Vault.sprout_uses_groth_proofs());
     }
 
     #[test]
