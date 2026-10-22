@@ -1,0 +1,14 @@
+# Paths Semgrep never scans (contrib/semgrep/README.md). Semgrep scans git-tracked files only; this file
+# replaces its built-in ignore list, so the usual build and vendor directories are named here too.
+# Third-party code kept byte-for-byte from upstream: John Tromp's Equihash solver headers.
+components/equihash/tromp/
+# Generated code (prost-build, from the .proto files beside it): fixed by regenerating, never by hand.
+zcash_client_backend/src/proto/compact_formats.rs
+zcash_client_backend/src/proto/proposal.rs
+zcash_client_backend/src/proto/service.rs
+zcash_client_memory/src/proto/memwallet.rs
+# The scanner's own rules, test inputs and ledgers.
+contrib/semgrep/
+# Build output and caches.
+target/
+node_modules/

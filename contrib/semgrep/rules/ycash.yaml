@@ -1,0 +1,32 @@
+# Copyright (c) 2026 The Ycash developers
+# Distributed under the MIT software license, see the accompanying
+# file COPYING or https://www.opensource.org/licenses/mit-license.php .
+#
+# Ycash-specific Semgrep rules for this fork of librustzcash, scanned beside the pinned semgrep-rules
+# packs (contrib/semgrep/README.md). metadata.bucket pins a rule's bucket; without it the bucket
+# follows severity/impact/confidence.
+rules:
+  - id: ycash.consensus.zcash-only-branch-id
+    languages: [rust]
+    # Matches integer literals in code, never comments: Ycash replaced exactly these four Zcash
+    # mainnet consensus branch IDs with its own (components/zcash_protocol/src/consensus.rs,
+    # BranchId::try_from: Blossom 0x8e471bd6, Heartwood 0x66314da3, Canopy 0x19bd2d2f,
+    # NU5 0xf919a198). Overwinter, Sapling, NU6 and NU6.1 are shared with Zcash and not flagged.
+    patterns:
+      - pattern: $N
+      - metavariable-regex:
+          metavariable: $N
+          regex: (?i)^0x(2bb4_?0e60|f5b9_?230b|e9ff_?75a6|c2d6_?d0b4)(u32)?$
+    message: >-
+      A Zcash-mainnet consensus branch ID ($N: Zcash's Blossom, Heartwood, Canopy or NU5) that Ycash
+      does not use. ZIP-143/243/244 signature hashes commit to the branch ID, so a transaction built or
+      checked with it signs for Zcash's chain, not Ycash's, and ycashd rejects it. Use BranchId (and
+      BranchId::for_height) from zcash_protocol::consensus, which carries Ycash's IDs (0x374d694f
+      Ycash, 0x8e471bd6 Blossom, ..., 0x6d5b7a31 Vault).
+    severity: ERROR
+    metadata:
+      category: security
+      bucket: critical
+      cwe: ["CWE-670: Always-Incorrect Control Flow Implementation"]
+      references: ["components/zcash_protocol/src/consensus.rs (BranchId::try_from)",
+                   "https://zips.z.cash/zip-0200"]
