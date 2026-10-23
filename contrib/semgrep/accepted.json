@@ -1,0 +1,33 @@
+{
+  "_comment": "Accepted Semgrep findings (contrib/semgrep/README.md, 'Accepting a finding'). findings: fingerprint -> {rule, path, reason, by, date}. rule_paths: [{rule (glob), paths (globs), reason, by, date}]. Every entry needs a reason a reviewer can check.",
+  "findings": {
+    "9b1aca973922414c": {
+      "rule": "generic.secrets.security.detected-mailgun-api-key",
+      "path": "zcash_keys/src/encoding.rs",
+      "reason": "A Sapling extended spending key derived from the all-zero seed (ExtendedSpendingKey::master(&[0; 32])), the public encoding test vector inside zcash_keys::encoding's #[cfg(test)] module; the mailgun rule matches its 'key-' prefix and length. Not a credential. (mainnet HRP)",
+      "by": "semgrep CI setup",
+      "date": "2026-10-22"
+    },
+    "031e322698bf175c": {
+      "rule": "generic.secrets.security.detected-mailgun-api-key",
+      "path": "zcash_keys/src/encoding.rs",
+      "reason": "A Sapling extended spending key derived from the all-zero seed (ExtendedSpendingKey::master(&[0; 32])), the public encoding test vector inside zcash_keys::encoding's #[cfg(test)] module; the mailgun rule matches its 'key-' prefix and length. Not a credential. (testnet HRP)",
+      "by": "semgrep CI setup",
+      "date": "2026-10-22"
+    }
+  },
+  "rule_paths": [
+    {
+      "rule": "yaml.github-actions.security.*",
+      "paths": [
+        ".github/workflows/ci.yml",
+        ".github/workflows/audits.yml",
+        ".github/workflows/book.yml",
+        ".github/workflows/mutants.yml"
+      ],
+      "reason": "Upstream librustzcash workflows kept as upstream wrote them except the scoping in each file's \"Ycash (2026-10-06)\" note: ci.yml and audits.yml run only for upstream's `main` (this fork has none), book.yml only on a push to `main`, and mutants.yml's schedule only in zcash/*; their tag-pinned toolchain/mdbook actions (dtolnay/rust-toolchain@stable and the like) are upstream's choice, so their findings are upstream's. The same files and reason as .github/zizmor.yml. ycash-fork.yml, the fork's own CI, has no entry and stays scanned.",
+      "by": "semgrep CI setup",
+      "date": "2026-10-22"
+    }
+  ]
+}
