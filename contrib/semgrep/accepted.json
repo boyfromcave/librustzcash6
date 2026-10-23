@@ -14,6 +14,34 @@
       "reason": "A Sapling extended spending key derived from the all-zero seed (ExtendedSpendingKey::master(&[0; 32])), the public encoding test vector inside zcash_keys::encoding's #[cfg(test)] module; the mailgun rule matches its 'key-' prefix and length. Not a credential. (testnet HRP)",
       "by": "semgrep CI setup",
       "date": "2026-10-22"
+    },
+    "c8541879aa143acc": {
+      "rule": "ycash.parse.panic-in-transaction-reader",
+      "path": "zcash_primitives/src/block.rs",
+      "reason": "BlockHeader/Block::read: `vin.first().expect(\"checked above\")` runs after `.filter(|b| b.is_coinbase())` returned an error for a non-coinbase bundle; is_coinbase requires exactly one input with a null prevout, so first() is Some. Upstream code, unchanged by the fork.",
+      "by": "secops CI setup",
+      "date": "2026-10-23"
+    },
+    "6dd3def8d8f8fbca": {
+      "rule": "ycash.parse.panic-in-transaction-reader",
+      "path": "zcash_primitives/src/block.rs",
+      "reason": "Block::read: `.freeze().expect(\"valid\")` re-freezes the coinbase that Transaction::read just parsed, as a pre-v5 (Sprout/V3/V4) transaction with only its branch ID changed; freezing a pre-v5 TransactionData computes its txid and has no failure path for data that parsed. Upstream code, unchanged by the fork.",
+      "by": "secops CI setup",
+      "date": "2026-10-23"
+    },
+    "95aa14191b7eeec0": {
+      "rule": "ycash.parse.panic-in-transaction-reader",
+      "path": "zcash_primitives/src/transaction/components/orchard.rs",
+      "reason": "read_v5_bundle: `NonEmpty::from_vec(..).expect(..)` is in the else-arm of `if actions_without_auth.is_empty()`, and the vector is mapped one-to-one (try_map + collect with `?`), so it is non-empty. Upstream code.",
+      "by": "secops CI setup",
+      "date": "2026-10-23"
+    },
+    "6103caa72e1073a3": {
+      "rule": "ycash.parse.panic-in-transaction-reader",
+      "path": "zcash_primitives/src/transaction/components/sapling.rs",
+      "reason": "read_v5_bundle: `anchor.unwrap()` runs once per spend; anchor is Some exactly when n_spends > 0 (read just above), as the in-line comment says. Upstream code.",
+      "by": "secops CI setup",
+      "date": "2026-10-23"
     }
   },
   "rule_paths": [

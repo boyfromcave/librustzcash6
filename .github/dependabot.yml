@@ -1,14 +1,44 @@
+# Ycash (2026-10-23): Dependabot for the fork, security updates only, one grouped PR per ecosystem
+# (SECURITY-CI.md). Version updates are suppressed (open-pull-requests-limit: 0): routine bumps
+# follow upstream librustzcash and ycash6's pin (Cargo.lock is committed, builds are --locked,
+# actions are SHA-pinned). Security updates ignore that limit and land as a single "security"
+# group per ecosystem, updated in place. (Upstream's file opened daily github-actions PRs
+# assigned to upstream's maintainer.)
 version: 2
 updates:
-- package-ecosystem: github-actions
-  directory: "/"
-  schedule:
-    interval: daily
-    timezone: Etc/UTC
-  open-pull-requests-limit: 10
-  reviewers:
-  - str4d
-  assignees:
-  - str4d
-  labels:
-  - "A-CI"
+  - package-ecosystem: cargo
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 0
+    cooldown:
+      default-days: 7
+    groups:
+      security:
+        applies-to: security-updates
+        patterns: ["*"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 0
+    cooldown:
+      default-days: 7
+    groups:
+      security:
+        applies-to: security-updates
+        patterns: ["*"]
+
+  # The hash-locked Semgrep CLI (contrib/semgrep/requirements.txt, shared with ycash-dd). CI-only.
+  - package-ecosystem: pip
+    directory: /contrib/semgrep
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 0
+    cooldown:
+      default-days: 7
+    groups:
+      security:
+        applies-to: security-updates
+        patterns: ["*"]
