@@ -2,12 +2,21 @@
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or https://www.opensource.org/licenses/mit-license.php .
 #
-# zizmor configuration for the Ycash fork. ycash-fork.yml (the fork's CI) is zizmor-clean with
-# no entry here. The entries are upstream librustzcash's own workflows, kept as upstream wrote
-# them except for the scoping in each file's "Ycash (2026-10-06)" note: their tag-pinned
-# toolchain/mdbook actions (`dtolnay/rust-toolchain@stable` and the like) are upstream's choice.
+# zizmor configuration for the Ycash fork (zizmor 1.30.1, pinned in workflows/zizmor.yml). The fork's
+# own workflows (ycash-fork.yml, semgrep.yml, codeql.yml, secops.yml, zizmor.yml) and dependabot.yml
+# are zizmor-clean with no entry here. The entries are upstream librustzcash's own workflows, kept
+# as upstream wrote them except for the scoping in each file's "Ycash (2026-10-06)" note (they run
+# on upstream's `main` only, which this fork does not have):
+#   unpinned-uses       their tag-pinned toolchain/mdbook actions (`dtolnay/rust-toolchain@stable`
+#                       and the like) are upstream's choice.
+#   self-repository     `uses: ./.github/actions/prepare` is upstream's spelling of the local action.
+#   template-injection  (informational) the expanded value is `steps.prepare.outputs.feature-flags`,
+#                       computed by the local prepare action from the job matrix, not from any
+#                       attacker-controlled event field.
 rules:
   unpinned-uses:
     ignore: [ci.yml, audits.yml, book.yml, mutants.yml]
-  dependabot-cooldown:
-    ignore: [dependabot.yml]
+  self-repository:
+    ignore: [ci.yml, book.yml]
+  template-injection:
+    ignore: [ci.yml, book.yml]
