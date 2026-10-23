@@ -59,7 +59,7 @@ pub fn init_blockmeta_db(
     db: &mut FsBlockDb,
 ) -> Result<(), MigratorError<uuid::Uuid, rusqlite::Error>> {
     let adapter = RusqliteAdapter::new(&mut db.conn, Some("schemer_migrations".to_string()));
-    adapter.init().expect("Migrations table setup succeeds.");
+    adapter.init().map_err(MigratorError::Adapter)?;
 
     let mut migrator = Migrator::new(adapter);
     migrator

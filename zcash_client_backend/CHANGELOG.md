@@ -10,6 +10,18 @@ workspace.
 
 ## [0.23.0] - PLANNED
 
+### Added
+- `zcash_client_backend::scanning::ScanError::TxIndexInvalid`
+
+### Fixed
+- `zcash_client_backend::scanning::scan_block` (and so `data_api::chain::scan_cached_blocks`)
+  returns `ScanError::TxIndexInvalid` for a compact transaction whose index does not fit in
+  16 bits, and `ScanError::EncodingInvalid` for a compact Sapling spend or Orchard action whose
+  nullifier does not parse, instead of panicking on input from the lightwalletd server.
+- `zcash_client_backend::tor` (behind the `tor` feature): an HTTPS request to a host that is
+  not a valid TLS server name returns an error instead of panicking, and the exchange-rate
+  query returns the trusted exchange's error instead of panicking when only it failed.
+
 ### Changed
 - Migrated to `zcash_protocol 0.9.0`, `zcash_address 0.12.0`,
   `zcash_transparent 0.8.0`, `zip321 0.8.0`, `zcash_keys 0.14.0`,

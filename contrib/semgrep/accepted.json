@@ -252,6 +252,1098 @@
       "reason": "IncomingViewingKey deserialize (second identical site in keys.rs): `data[..32].try_into().expect(\"correct length\")` converts the first 32 bytes of a `&[u8; 65]` to [u8; 32]; the length is fixed by the parameter type. Upstream librustzcash code, unchanged by the fork.",
       "by": "secops triage",
       "date": "2026-10-23"
+    },
+    "2545471e2792462c": {
+      "rule": "rust.lang.security.unsafe-usage",
+      "path": "components/equihash/src/blake2b.rs",
+      "reason": "components/equihash: the `solver` feature (experimental tromp solver, src/lib.rs:44-47) is enabled by no crate in this workspace and by neither ycash6 (zcash_primitives::block::equihash = verify only) nor YEW; this is an extern \"C\" callback the C solver (tromp/equi_miner.c) calls through the function pointers handed to equi_new; blake2b_init is not called by the C code at all (grep equi_miner.c); a null pointer hits unwrap, which aborts in an extern \"C\" fn rather than dereferencing null.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "d0d34b953aa82ee1": {
+      "rule": "rust.lang.security.unsafe-usage",
+      "path": "components/equihash/src/blake2b.rs",
+      "reason": "components/equihash: the `solver` feature (experimental tromp solver, src/lib.rs:44-47) is enabled by no crate in this workspace and by neither ycash6 (zcash_primitives::block::equihash = verify only) nor YEW; this is an extern \"C\" callback the C solver (tromp/equi_miner.c) calls through the function pointers handed to equi_new; as_ref() maps a null state to None (returns null); a non-null state is one Box::into_raw'd by blake2b_init/blake2b_clone and not yet freed (equi_miner.c:302,529 clone eq->blake_ctx, which equi_setstate keeps live).",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "93f23d6f3b5e5916": {
+      "rule": "rust.lang.security.unsafe-usage",
+      "path": "components/equihash/src/blake2b.rs",
+      "reason": "components/equihash: the `solver` feature (experimental tromp solver, src/lib.rs:44-47) is enabled by no crate in this workspace and by neither ycash6 (zcash_primitives::block::equihash = verify only) nor YEW; this is an extern \"C\" callback the C solver (tromp/equi_miner.c) calls through the function pointers handed to equi_new; frees a state produced by Box::into_raw in blake2b_clone; the C code frees each clone exactly once and nulls the pointer after (equi_miner.c:289-301, 533-535); null is skipped.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "888945813bf75957": {
+      "rule": "rust.lang.security.unsafe-usage",
+      "path": "components/equihash/src/blake2b.rs",
+      "reason": "components/equihash: the `solver` feature (experimental tromp solver, src/lib.rs:44-47) is enabled by no crate in this workspace and by neither ycash6 (zcash_primitives::block::equihash = verify only) nor YEW; this is an extern \"C\" callback the C solver (tromp/equi_miner.c) calls through the function pointers handed to equi_new; the state is a live clone (equi_miner.c:529-531); as_mut().unwrap() turns a null into an abort, not a null dereference.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "0d33f3124ef7e672": {
+      "rule": "rust.lang.security.unsafe-usage",
+      "path": "components/equihash/src/blake2b.rs",
+      "reason": "components/equihash: the `solver` feature (experimental tromp solver, src/lib.rs:44-47) is enabled by no crate in this workspace and by neither ycash6 (zcash_primitives::block::equihash = verify only) nor YEW; this is an extern \"C\" callback the C solver (tromp/equi_miner.c) calls through the function pointers handed to equi_new; the only caller passes (&leb, sizeof(u32)), a 4-byte stack u32 (equi_miner.c:531), so the slice is in bounds.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "888945813bf75957-1": {
+      "rule": "rust.lang.security.unsafe-usage",
+      "path": "components/equihash/src/blake2b.rs",
+      "reason": "components/equihash: the `solver` feature (experimental tromp solver, src/lib.rs:44-47) is enabled by no crate in this workspace and by neither ycash6 (zcash_primitives::block::equihash = verify only) nor YEW; this is an extern \"C\" callback the C solver (tromp/equi_miner.c) calls through the function pointers handed to equi_new; the state is a live clone (equi_miner.c:529-532); as_mut().unwrap() turns a null into an abort, not a null dereference.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "b81ebe23e368e97f": {
+      "rule": "rust.lang.security.unsafe-usage",
+      "path": "components/equihash/src/blake2b.rs",
+      "reason": "components/equihash: the `solver` feature (experimental tromp solver, src/lib.rs:44-47) is enabled by no crate in this workspace and by neither ycash6 (zcash_primitives::block::equihash = verify only) nor YEW; this is an extern \"C\" callback the C solver (tromp/equi_miner.c) calls through the function pointers handed to equi_new; the only caller passes (hash, HASHOUT) with uchar hash[HASHOUT] (equi_miner.c:524,532; HASHOUT = 50 for 200,9), and the assert caps output_len at the 64-byte digest before the copy.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "fa3f0e25f141f55d": {
+      "rule": "rust.lang.security.unsafe-usage",
+      "path": "components/equihash/src/tromp.rs",
+      "reason": "components/equihash: the `solver` feature (experimental tromp solver, src/lib.rs:44-47) is enabled by no crate in this workspace and by neither ycash6 (zcash_primitives::block::equihash = verify only) nor YEW; FFI into tromp/equi_miner.c on the `eq` from equi_new, created once per solve_200_9_uncompressed and freed after the loop; equi_setstate clones curr_state (a live &State) through blake2b_clone and resets nsols (equi_miner.c:297-306).",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "b2782259a0de0534": {
+      "rule": "rust.lang.security.unsafe-usage",
+      "path": "components/equihash/src/tromp.rs",
+      "reason": "components/equihash: the `solver` feature (experimental tromp solver, src/lib.rs:44-47) is enabled by no crate in this workspace and by neither ycash6 (zcash_primitives::block::equihash = verify only) nor YEW; FFI into tromp/equi_miner.c on the `eq` from equi_new, created once per solve_200_9_uncompressed and freed after the loop; the solver's buffers are sized by the compile-time 200,9 parameters, which are the only ones solve_200_9 passes.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "52e3f646d07a77cc": {
+      "rule": "rust.lang.security.unsafe-usage",
+      "path": "components/equihash/src/tromp.rs",
+      "reason": "components/equihash: the `solver` feature (experimental tromp solver, src/lib.rs:44-47) is enabled by no crate in this workspace and by neither ycash6 (zcash_primitives::block::equihash = verify only) nor YEW; FFI into tromp/equi_miner.c on the `eq` from equi_new, created once per solve_200_9_uncompressed and freed after the loop; equi_clearslots only zeroes three counters (equi_miner.c:307-309).",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "2b68d93380c19ad9": {
+      "rule": "rust.lang.security.unsafe-usage",
+      "path": "components/equihash/src/tromp.rs",
+      "reason": "components/equihash: the `solver` feature (experimental tromp solver, src/lib.rs:44-47) is enabled by no crate in this workspace and by neither ycash6 (zcash_primitives::block::equihash = verify only) nor YEW; FFI into tromp/equi_miner.c on the `eq` from equi_new, created once per solve_200_9_uncompressed and freed after the loop; r ranges over 1..p.k with p = Params(200, 9), the parameters the C code is compiled for.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "30142b6de3f57627": {
+      "rule": "rust.lang.security.unsafe-usage",
+      "path": "components/equihash/src/tromp.rs",
+      "reason": "components/equihash: the `solver` feature (experimental tromp solver, src/lib.rs:44-47) is enabled by no crate in this workspace and by neither ycash6 (zcash_primitives::block::equihash = verify only) nor YEW; FFI into tromp/equi_miner.c on the `eq` from equi_new, created once per solve_200_9_uncompressed and freed after the loop; r ranges over 1..p.k with p = Params(200, 9), the parameters the C code is compiled for.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "52e3f646d07a77cc-1": {
+      "rule": "rust.lang.security.unsafe-usage",
+      "path": "components/equihash/src/tromp.rs",
+      "reason": "components/equihash: the `solver` feature (experimental tromp solver, src/lib.rs:44-47) is enabled by no crate in this workspace and by neither ycash6 (zcash_primitives::block::equihash = verify only) nor YEW; FFI into tromp/equi_miner.c on the `eq` from equi_new, created once per solve_200_9_uncompressed and freed after the loop; equi_clearslots only zeroes three counters (equi_miner.c:307-309).",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "96816c86cc69895e": {
+      "rule": "rust.lang.security.unsafe-usage",
+      "path": "components/equihash/src/tromp.rs",
+      "reason": "components/equihash: the `solver` feature (experimental tromp solver, src/lib.rs:44-47) is enabled by no crate in this workspace and by neither ycash6 (zcash_primitives::block::equihash = verify only) nor YEW; FFI into tromp/equi_miner.c on the `eq` from equi_new, created once per solve_200_9_uncompressed and freed after the loop; equi_digitK writes at most MAXSOLS solutions (candidate, equi_miner.c:368-373).",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "a09af0e9c6bfe09c": {
+      "rule": "rust.lang.security.unsafe-usage",
+      "path": "components/equihash/src/tromp.rs",
+      "reason": "components/equihash: the `solver` feature (experimental tromp solver, src/lib.rs:44-47) is enabled by no crate in this workspace and by neither ycash6 (zcash_primitives::block::equihash = verify only) nor YEW; FFI into tromp/equi_miner.c on the `eq` from equi_new, created once per solve_200_9_uncompressed and freed after the loop; equi_sols returns eq->sols, the MAXSOLS-proof buffer allocated in equi_new (equi_miner.c:271), live until equi_free.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "f3f1a51820b737aa": {
+      "rule": "rust.lang.security.unsafe-usage",
+      "path": "components/equihash/src/tromp.rs",
+      "reason": "components/equihash: the `solver` feature (experimental tromp solver, src/lib.rs:44-47) is enabled by no crate in this workspace and by neither ycash6 (zcash_primitives::block::equihash = verify only) nor YEW; FFI into tromp/equi_miner.c on the `eq` from equi_new, created once per solve_200_9_uncompressed and freed after the loop; FIXED alongside: equi_nsols can exceed MAXSOLS (candidate in equi_miner.c:368-373 increments nsols unconditionally but stores only soli < MAXSOLS), which made this slice read past the 8-proof eq->sols buffer; nsols is now clamped to MAXSOLS (= 8, equi_miner.c:80), so the slice covers exactly the nsols * 2^k u32s of the buffer equi_sols returns, borrowed only until the solutions are copied out.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "4cf8162dc29cac2b": {
+      "rule": "rust.lang.security.unsafe-usage",
+      "path": "components/equihash/src/tromp.rs",
+      "reason": "components/equihash: the `solver` feature (experimental tromp solver, src/lib.rs:44-47) is enabled by no crate in this workspace and by neither ycash6 (zcash_primitives::block::equihash = verify only) nor YEW; FFI into tromp/equi_miner.c on the `eq` from equi_new, created once per solve_200_9_uncompressed and freed after the loop; equi_new takes the four blake2b callbacks of blake2b.rs in the order of its C prototype (equi_miner.c:256-261); it asserts its allocations (htalloc_alloc assert(mem)).",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "c889c5742333cc0b": {
+      "rule": "rust.lang.security.unsafe-usage",
+      "path": "components/equihash/src/tromp.rs",
+      "reason": "components/equihash: the `solver` feature (experimental tromp solver, src/lib.rs:44-47) is enabled by no crate in this workspace and by neither ycash6 (zcash_primitives::block::equihash = verify only) nor YEW; FFI into tromp/equi_miner.c on the `eq` from equi_new, created once per solve_200_9_uncompressed and freed after the loop; worker is called with the live eq and p = Params(200, 9) matching the C build; its own unsafe blocks are reviewed per line.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "34ae270bd084b8eb": {
+      "rule": "rust.lang.security.unsafe-usage",
+      "path": "components/equihash/src/tromp.rs",
+      "reason": "components/equihash: the `solver` feature (experimental tromp solver, src/lib.rs:44-47) is enabled by no crate in this workspace and by neither ycash6 (zcash_primitives::block::equihash = verify only) nor YEW; FFI into tromp/equi_miner.c on the `eq` from equi_new, created once per solve_200_9_uncompressed and freed after the loop; equi_free is called once, after the loop, and eq is not used after it; equi_free nulls its fields and tolerates a null eq (equi_miner.c:283-296).",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "e18dc7e4cac3cc13": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/build.rs",
+      "reason": "zcash_client_backend/build.rs: build script; cargo always sets OUT_DIR for build scripts, and a panic there only fails the build.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "026f8c58be0f23a0": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/testing.rs",
+      "reason": "zcash_client_backend/src/data_api/testing.rs: test harness behind the `test-dependencies` feature (lib.rs gates data_api::testing on it), not used by any production build; a one-payment TransactionRequest cannot violate ZIP 321's uniqueness rules.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "f4ea7d802b58c795": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_primitives/src/transaction/tests.rs",
+      "reason": "zcash_primitives/src/transaction/tests.rs: #[cfg(test)] unit-test module (transaction/mod.rs `#[cfg(test)] mod tests`), never compiled into a release; a test panic is a test failure.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "572487b0307c9eb6": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_primitives/src/transaction/tests.rs",
+      "reason": "zcash_primitives/src/transaction/tests.rs: #[cfg(test)] unit-test module (transaction/mod.rs `#[cfg(test)] mod tests`), never compiled into a release; a test panic is a test failure.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "1a724b1871336c27": {
+      "rule": "rust.lang.security.args",
+      "path": "zcash_history/examples/long.rs",
+      "reason": "zcash_history/examples/long.rs: developer example binary (cargo --example), not part of any library or release; argv is only parsed as a block count, never used as a path or for security decisions.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "d56f568f5cf44add": {
+      "rule": "rust.lang.security.args",
+      "path": "zcash_history/examples/write.rs",
+      "reason": "zcash_history/examples/write.rs: developer example binary (cargo --example), not part of any library or release; argv is the output file path the developer chose to write.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "317c7208e36d4234": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api.rs",
+      "reason": "Balance::add_spendable_value: check_total_adding (data_api.rs:220-226) already returned Overflow unless spendable + pending_change + pending_spendability + value <= MAX_MONEY; Zatoshis are non-negative, so spendable + value is within that bound and the add cannot fail.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "ac38abbf6a09ee47": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api.rs",
+      "reason": "Balance::add_pending_change_value: check_total_adding (data_api.rs:220-226) already returned Overflow unless the sum of all three totals plus value <= MAX_MONEY; Zatoshis are non-negative, so change_pending_confirmation + value cannot fail.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "387347f8fce568b8": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api.rs",
+      "reason": "Balance::add_pending_spendable_value: check_total_adding (data_api.rs:220-226) already returned Overflow unless the sum of all three totals plus value <= MAX_MONEY; Zatoshis are non-negative, so value_pending_spendability + value cannot fail.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "7e0b87ac61f88a0c": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/ll/wallet.rs",
+      "reason": "ll::wallet::put_blocks returns Ok(()) early when blocks.is_empty() (two lines above), so first() is Some.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "1520d6fcd38c031c": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/ll/wallet.rs",
+      "reason": "usize -> u64 conversion is infallible on every target this crate builds for (usize is at most 64 bits).",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "71b1ca0fd4a4877d": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/ll/wallet.rs",
+      "reason": "usize -> u64 conversion is infallible on every target this crate builds for (usize is at most 64 bits).",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "c22e8acb040011ad": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/ll/wallet.rs",
+      "reason": "ll::wallet::put_blocks: reached only inside `last_scanned_height.iter().any(..)`, which is true only when last_scanned_height is Some.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "2b105ed64ad6b2c3": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/ll/wallet.rs",
+      "reason": "ll::wallet::put_blocks: the commitment count of a ScannedBlock is the block's Sapling output count, which the scanner (scanning/compact.rs tree_sizes_around) already holds in a u32 and checks against the u32 final tree size; a Vec of >= 2^32 outputs (>= 72 bytes each in memory) cannot be decoded.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "6d5bf0e9621739df": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/ll/wallet.rs",
+      "reason": "ll::wallet::put_blocks: the commitment count of a ScannedBlock is the block's Orchard action count, held in a u32 by the scanner (scanning/compact.rs tree_sizes_around); a Vec of >= 2^32 actions cannot be decoded. Orchard is off in every Ycash consumer.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "88c5053752544536": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/ll/wallet.rs",
+      "reason": "ll::wallet::store_decrypted_tx: this branch is reached only after txout.recipient_address() returned Some (the `if let Some(address)` two blocks up), which is exactly the check WalletTransparentOutput::from_parts repeats; output_index comes from enumerate() over the transaction's vout, whose count is a CompactSize read into memory (< 2^32).",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "e663541731e32605": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/ll/wallet.rs",
+      "reason": "ll::wallet::store_decrypted_tx: output_index comes from enumerate() over the decoded transaction's vout; a Vec of >= 2^32 TxOuts cannot exist in memory, so the u32 conversion cannot fail.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "f0b340e147fc6bc8": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/ll/wallet.rs",
+      "reason": "ll::wallet::put_shielded_outputs: TransferType::Outgoing only arises from full-transaction decryption (decrypt.rs:171,226) via store_decrypted_tx, which passes Some(params) (ll/wallet.rs:725,742); put_blocks passes None but its compact-scan outputs are only Incoming/WalletInternal (ll.rs:656-658).",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "cf52afbb993de031": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/ll/wallet.rs",
+      "reason": "ll::wallet::put_shielded_outputs: funding_account is Some only from store_decrypted_tx, which passes Some(params) (ll/wallet.rs:725-746); put_blocks passes funding_account None (ll/wallet.rs:331-363).",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "bc0e2986f0b01e9a": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/ll/wallet.rs",
+      "reason": "ll::wallet::put_shard_roots / insert_frontier path: tree.insert_frontier was called just above with Retention::Checkpoint, so the store holds at least one checkpoint; storage errors are already mapped by `?`. Orchard-only, which no Ycash consumer enables.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "9809c93d9b6ca8ea": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/wallet.rs",
+      "reason": "data_api::wallet::propose_standard_transfer_to_address: TransactionRequest::new (zip321 lib.rs:299-317) fails only for > 9999 payments or a payment that does not round-trip its own URI; this is one Payment already accepted by Payment::new (error mapped by `?`) with no label, message or other params.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "1fc0c5cdad98ebba": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/wallet.rs",
+      "reason": "data_api::wallet::create_proposed_transactions: one txid is pushed per element of proposal.steps(), a NonEmpty, so txids is non-empty.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "a5d952f41a92395e": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/wallet.rs",
+      "reason": "zcash_client_backend transaction building from a Proposal; Proposal/Step are only constructible through Step::from_parts (proposal.rs:420-455), which checks that payment_pools covers every payment index and that each recipient can receive in its pool; address_index is a NonHardenedChildIndex from the wallet's own UTXO metadata; non-hardened BIP 32 public derivation fails only if the derived tweak is >= the curve order (probability ~2^-127).",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "220af996c70d37cd": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/wallet.rs",
+      "reason": "zcash_client_backend transaction building from a Proposal; Proposal/Step are only constructible through Step::from_parts (proposal.rs:420-455), which checks that payment_pools covers every payment index and that each recipient can receive in its pool; so every payment index in payment_pools has a payment in the step's transaction request.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "29941ab9e53d8a6a": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/wallet.rs",
+      "reason": "zcash_client_backend transaction building from a Proposal; Proposal/Step are only constructible through Step::from_parts (proposal.rs:420-455), which checks that payment_pools covers every payment index and that each recipient can receive in its pool; an Orchard payment pool is recorded only for a recipient that can_receive_as(Orchard), i.e. a UA with an Orchard receiver.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "cb5ffcf67aecac57": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/wallet.rs",
+      "reason": "zcash_client_backend transaction building from a Proposal; Proposal/Step are only constructible through Step::from_parts (proposal.rs:420-455), which checks that payment_pools covers every payment index and that each recipient can receive in its pool; a Sapling payment pool is recorded only for a recipient that can_receive_as(Sapling), i.e. a UA with a Sapling receiver.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "d15ca5b9e16f91f7": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/wallet.rs",
+      "reason": "zcash_client_backend transaction building from a Proposal; Proposal/Step are only constructible through Step::from_parts (proposal.rs:420-455), which checks that payment_pools covers every payment index and that each recipient can receive in its pool; a transparent payment pool is recorded only for a recipient that can_receive_as(Transparent), i.e. a UA with a transparent receiver.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "d143567750114fe3": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/wallet.rs",
+      "reason": "zcash_client_backend transaction building from a Proposal; Proposal/Step are only constructible through Step::from_parts (proposal.rs:420-455), which checks that payment_pools covers every payment index and that each recipient can receive in its pool; address_index is a NonHardenedChildIndex from the wallet's own UTXO metadata; non-hardened BIP 32 private derivation fails only if the tweak is >= the curve order (probability ~2^-127).",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "3fb1859486234379": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/wallet.rs",
+      "reason": "data_api::wallet: build_result comes from the Builder this function just ran over the same outputs; the builder's orchard_meta records an action index for every Orchard output it added.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "82f1029ccc37b4b3": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/wallet.rs",
+      "reason": "data_api::wallet: the output was just built by this function to the wallet's own internal Orchard address, so it decrypts with the wallet's internal IVK by construction.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "2ac4c86e65921b82": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/wallet.rs",
+      "reason": "data_api::wallet: build_result comes from the Builder this function just ran; its sapling_meta records an output index for every Sapling output it added.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "84ebe8f5b1b6c2ed": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/wallet.rs",
+      "reason": "data_api::wallet: the output was just built by this function to the wallet's own internal Sapling address, so it decrypts with the wallet's internal IVK by construction.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "db8f39f9468ca77d": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/wallet.rs",
+      "reason": "data_api::wallet::create_pczt_from_proposal: build_result comes from the PCZT builder this function just ran; orchard_meta records an action index for every Orchard output it added.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "fca402a300ed4b4c": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/wallet.rs",
+      "reason": "data_api::wallet::create_pczt_from_proposal: build_result comes from the PCZT builder this function just ran; sapling_meta records an output index for every Sapling output it added.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "f8afea3323d1f40c": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/wallet.rs",
+      "reason": "postcard::to_allocvec of an in-memory struct of plain fields into a growable Vec: postcard's Vec flavor cannot run out of space and the derived Serialize raises no custom error, so it cannot fail.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "f50aaff11c05f6e2": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/wallet.rs",
+      "reason": "orchard::pczt::Zip32Derivation::parse (orchard 0.14 src/pczt/parse.rs:283-294) only rejects non-hardened indices; every element of the 3-element path (32', coin_type', account') is ChildIndex::hardened(..).index().",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "2a9524763ab7b2d5": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/wallet.rs",
+      "reason": "postcard::to_allocvec of the in-memory PcztRecipient enum into a growable Vec: the Vec flavor cannot run out of space and the derived Serialize raises no custom error.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "30dce6dd02ec23d7": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/wallet.rs",
+      "reason": "sapling::pczt::Zip32Derivation::parse (sapling-crypto 0.7 src/pczt/parse.rs:251-262) only rejects non-hardened indices; every element of the 3-element path (32', coin_type', account') is ChildIndex::hardened(..).index().",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "2a9524763ab7b2d5-1": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/wallet.rs",
+      "reason": "postcard::to_allocvec of the in-memory PcztRecipient enum into a growable Vec: the Vec flavor cannot run out of space and the derived Serialize raises no custom error.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "7d05006855d2371a": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/wallet.rs",
+      "reason": "data_api::wallet::create_pczt_from_proposal: every transparent input in the PCZT was added by build_proposed_transaction from a wallet UTXO whose script was already resolved to a TransparentAddress (WalletTransparentOutput::from_parts requires it), so the script parses back to that address.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "7e9e80a3fe962efd": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/wallet.rs",
+      "reason": "data_api::wallet::create_pczt_from_proposal: this input carries Derived address metadata, so build_proposed_transaction (called earlier by this function) added it only after ufvk.transparent() was Some (ok_or(KeyNotAvailable)? at wallet.rs:1358-1361).",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "d3a50180f8a3da1d": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/wallet.rs",
+      "reason": "data_api::wallet::create_pczt_from_proposal: build_proposed_transaction (called earlier by this function) already derived the pubkey for this same (scope, address_index) to add the input; derivation is deterministic.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "a4a013cece50e91c": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/wallet.rs",
+      "reason": "transparent::pczt::Bip32Derivation::parse (zcash_transparent/src/pczt/parse.rs:124-132) has no error path: it wraps the given fingerprint and indices and always returns Ok.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "033372393c867d3d": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/wallet.rs",
+      "reason": "postcard::to_allocvec of the in-memory PcztRecipient enum into a growable Vec: the Vec flavor cannot run out of space and the derived Serialize raises no custom error.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "f03730be22a6a3f3": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/wallet.rs",
+      "reason": "data_api::wallet::extract_and_store_transaction_from_pczt: the note is rebuilt from the PCZT with Rseed::AfterZip212 for Sapling (wallet.rs:2296-2300) and Orchard notes are always post-ZIP 212, so derive_esk returns Some.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "4ce1e5d3afb8c6f0": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/wallet.rs",
+      "reason": "memo_bytes returns a &[u8; 512], and MemoBytes::from_bytes fails only for input longer than 512 bytes.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "d59467ca270098ff": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/wallet.rs",
+      "reason": "data_api::wallet::extract_and_store_transaction_from_pczt: utxos_map is built from every transparent input of the same PCZT the transaction was extracted from, so every outpoint the fee computation looks up is present.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "5662e3999639d025": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/wallet/input_selection.rs",
+      "reason": "input_selection: Payment::new fails only for a memo to a transparent recipient or a recipient that cannot take a memo; memo is None here, so it cannot fail.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "67e5ae66f208bdec": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/wallet/input_selection.rs",
+      "reason": "input_selection::propose_send_max: tr1_fee is the fee of one fixed 1-in/1-out P2PKH transaction and tr0_fee a ZIP 317 fee over the wallet's notes; each is a Zatoshis <= MAX_MONEY and their sum would need ~2*10^11 logical actions to exceed it.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "4e8e8d4dd103340c": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/wallet/input_selection.rs",
+      "reason": "input_selection::propose_send_max: total_to_recipient = input_total - (tr0_fee + tr1_fee), so total_to_recipient + tr1_fee <= input_total <= MAX_MONEY.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "87f1b98c9a64446e": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/wallet/input_selection.rs",
+      "reason": "TransactionBalance::new sums the change values plus the fee; here at most one change value (ephemeral_output_value <= input_total) plus tr0_fee, both within input_total <= MAX_MONEY by the subtraction above.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "a496c5b578d87026": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/wallet/input_selection.rs",
+      "reason": "TransactionBalance::new with an empty change vector only checks fee <= MAX_MONEY, which tr1_fee (a Zatoshis) already is.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "553d00543284c7cd": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/wallet/input_selection.rs",
+      "reason": "TransactionRequest::from_indexed over a subset of the payments of an already-valid TransactionRequest; removing payments cannot introduce a ZIP 321 violation.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "dc6925e74eafa0dc": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/wallet/input_selection.rs",
+      "reason": "input_selection: tr1_payments are the TEX payments split out of the validated request, one per index, each a transparent Payment without memo, so TransactionRequest::new accepts them.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "95716ecbc09bb8a8": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/data_api/wallet/input_selection.rs",
+      "reason": "input_selection: steps has had two Step values pushed just above (tr0 and tr1), so NonEmpty::from_vec is Some.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "e80d55e77879f976": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/fees/common.rs",
+      "reason": "fees::common::single_pool_output_balance: split_count comes from a NonZeroUsize (fees/common.rs:422), so it is >= 1, and usize -> u64 is infallible on every supported target.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "e80d55e77879f976-1": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/fees/common.rs",
+      "reason": "fees::common::single_pool_output_balance: split_count comes from a NonZeroUsize (fees/common.rs:422), so NonZeroU64::new is Some.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "5e64c3ef80c6bf87": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/fees/common.rs",
+      "reason": "fees::common: quotient + remainder of total_change / split_count is <= total_change, itself a valid Zatoshis.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "7a604f37bb713f01": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/fees/common.rs",
+      "reason": "fees::common: MINIMUM_FEE * 10 is a constant (10,000 * 10 zatoshis), far below MAX_MONEY.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "d14bf69dd643e3e3": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/fees/common.rs",
+      "reason": "fees::common::check_for_uneconomic_inputs: t_dust is a filter of transparent_inputs and t_inputs_len >= transparent_inputs.len(), so the subtraction cannot underflow.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "a0dcbc58d02ef19a": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/fees/common.rs",
+      "reason": "fees::common::check_for_uneconomic_inputs: s_dust is a filter of sapling.inputs(), so s_dust.len() <= s_inputs_len.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "2ff82fa17d9c42ee": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/fees/common.rs",
+      "reason": "fees::common::check_for_uneconomic_inputs: o_dust is a filter of orchard.inputs() (or empty without orchard), so o_dust.len() <= o_inputs_len.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "a03924f571ef85fe": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/fees/common.rs",
+      "reason": "fees::common::check_for_uneconomic_inputs: its only caller (fees/common.rs:267-289) passes a possible_change vec of one or two elements, so the reduce is Some.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "6bb849d86010a2ed": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/proposal.rs",
+      "reason": "Step::from_parts: every payment was checked a few lines up to have an amount (PaymentAmountMissing), so transaction_request.total() is Some.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "7e3e21454f33308c": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/proto.rs",
+      "reason": "proto::ProposalStep decoding: payment_index is a protobuf u32 (proto/proposal.rs), and u32 -> usize is infallible on the 32- and 64-bit targets this crate builds for.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "560f50feff827805": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/proto.rs",
+      "reason": "proto::ProposalStep decoding: step_index is a protobuf u32 (proto/proposal.rs), and u32 -> usize is infallible on the 32- and 64-bit targets this crate builds for.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "ee66fe116d990948": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/proto.rs",
+      "reason": "proto::ProposalStep decoding: payment_index is a protobuf u32 (proto/proposal.rs), and u32 -> usize is infallible on the 32- and 64-bit targets this crate builds for.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "560f50feff827805-1": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/proto.rs",
+      "reason": "proto::ProposalStep decoding: step_index is a protobuf u32 (proto/proposal.rs), and u32 -> usize is infallible on the 32- and 64-bit targets this crate builds for.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "24923bf1e0d377f6": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/proto.rs",
+      "reason": "proto::ProposalStep decoding: change_index is a protobuf u32 (proto/proposal.rs), and u32 -> usize is infallible on the 32- and 64-bit targets this crate builds for.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "2f20f1442e6ed500": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/scanning/compact.rs",
+      "reason": "scanning::compact tree_sizes_around: the sum of per-transaction output counts of one decoded CompactBlock; >= 2^32 outputs would need a Vec of >= 2^32 CompactSaplingOutput (>= 72 bytes each, ~300 GB) in memory, and lightwalletd blocks arrive as single gRPC messages (tonic's 4 MiB default decode limit).",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "7df0350a58311b67": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/scanning/compact.rs",
+      "reason": "scanning::compact tree_sizes_around: one transaction's output count of a decoded CompactBlock; >= 2^32 outputs would need ~300 GB of decoded outputs in memory, and lightwalletd blocks arrive as single gRPC messages (tonic's 4 MiB default decode limit).",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "45049c6f3a1e8fe5": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/tor.rs",
+      "reason": "zcash_client_backend `tor` feature (lib.rs:78, Cargo.toml [features] tor), enabled by no Ycash component (YEW takes zcash_client_backend with default-features = false and no tor; ycash6 does not depend on the crate); arti-client 0.35 TorClientConfigBuilder::from_directories (src/config.rs:838-851) starts from Default and sets only literal state/cache paths; with_permissions sets only the storage permissions, so build() validates a default configuration plus those fields (upstream's stated invariant).",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "d01a12283b9d0883": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/tor/http.rs",
+      "reason": "zcash_client_backend `tor` feature (lib.rs:78, Cargo.toml [features] tor), enabled by no Ycash component (YEW takes zcash_client_backend with default-features = false and no tor; ycash6 does not depend on the crate); parse_url (called at the top of one_http_request, `?`) returned NonHttpUrl unless url.host() is Some, and http::Uri derives host() from authority(), so authority() is Some.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "e4cd67bac7cbe8e6": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/tor/http/cryptex.rs",
+      "reason": "zcash_client_backend `tor` feature (lib.rs:78, Cargo.toml [features] tor), enabled by no Ycash component (YEW takes zcash_client_backend with default-features = false and no tor; ycash6 does not depend on the crate); rates is empty only if trusted_res was Err (an Ok pushes its rate just above), and that Err is pushed onto errors in the same match arm, so errors is non-empty.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "df6f0d3fa63cc71e": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/tor/http/cryptex/binance.rs",
+      "reason": "zcash_client_backend `tor` feature (lib.rs:78, Cargo.toml [features] tor), enabled by no Ycash component (YEW takes zcash_client_backend with default-features = false and no tor; ycash6 does not depend on the crate); parses a constant https URL literal, so the unwrap cannot fail.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "a0e3a99cebd29338": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/tor/http/cryptex/coin_ex.rs",
+      "reason": "zcash_client_backend `tor` feature (lib.rs:78, Cargo.toml [features] tor), enabled by no Ycash component (YEW takes zcash_client_backend with default-features = false and no tor; ycash6 does not depend on the crate); parses a constant https URL literal, so the unwrap cannot fail.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "ced1279a2b6f7a4c": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/tor/http/cryptex/coinbase.rs",
+      "reason": "zcash_client_backend `tor` feature (lib.rs:78, Cargo.toml [features] tor), enabled by no Ycash component (YEW takes zcash_client_backend with default-features = false and no tor; ycash6 does not depend on the crate); parses a constant https URL literal, so the unwrap cannot fail.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "dc4780e693391854": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/tor/http/cryptex/digi_finex.rs",
+      "reason": "zcash_client_backend `tor` feature (lib.rs:78, Cargo.toml [features] tor), enabled by no Ycash component (YEW takes zcash_client_backend with default-features = false and no tor; ycash6 does not depend on the crate); parses a constant https URL literal, so the unwrap cannot fail.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "600c2b033f5dc9b4": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/tor/http/cryptex/gemini.rs",
+      "reason": "zcash_client_backend `tor` feature (lib.rs:78, Cargo.toml [features] tor), enabled by no Ycash component (YEW takes zcash_client_backend with default-features = false and no tor; ycash6 does not depend on the crate); parses a constant https URL literal, so the unwrap cannot fail.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "befdd16efe259d6b": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/tor/http/cryptex/kraken.rs",
+      "reason": "zcash_client_backend `tor` feature (lib.rs:78, Cargo.toml [features] tor), enabled by no Ycash component (YEW takes zcash_client_backend with default-features = false and no tor; ycash6 does not depend on the crate); parses a constant https URL literal, so the unwrap cannot fail.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "3dd6c06aec0b7ffd": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/tor/http/cryptex/ku_coin.rs",
+      "reason": "zcash_client_backend `tor` feature (lib.rs:78, Cargo.toml [features] tor), enabled by no Ycash component (YEW takes zcash_client_backend with default-features = false and no tor; ycash6 does not depend on the crate); parses a constant https URL literal, so the unwrap cannot fail.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "1f1e45ab30d3518b": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/tor/http/cryptex/mexc.rs",
+      "reason": "zcash_client_backend `tor` feature (lib.rs:78, Cargo.toml [features] tor), enabled by no Ycash component (YEW takes zcash_client_backend with default-features = false and no tor; ycash6 does not depend on the crate); parses a constant https URL literal, so the unwrap cannot fail.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "deefcfba026a65a3": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/tor/http/cryptex/xt.rs",
+      "reason": "zcash_client_backend `tor` feature (lib.rs:78, Cargo.toml [features] tor), enabled by no Ycash component (YEW takes zcash_client_backend with default-features = false and no tor; ycash6 does not depend on the crate); parses a constant https URL literal, so the unwrap cannot fail.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "ae2a241557d45f2b": {
+      "rule": "rust.lang.security.unsafe-usage",
+      "path": "components/equihash/src/tromp.rs",
+      "reason": "components/equihash: the `solver` feature (experimental tromp solver, src/lib.rs:44-47) is enabled by no crate in this workspace and by neither ycash6 (verify only) nor YEW; equi_nsols reads eq->nsols of the live eq from equi_new. This line carries the fix for an out-of-bounds read: the C solver counts solutions past MAXSOLS but stores only the first MAXSOLS (candidate, equi_miner.c:368-373), so the count is clamped to MAXSOLS (= 8, equi_miner.c:80) before the slice over the 8-proof eq->sols buffer is built.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "3574b21c9570386b": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_backend/src/tor/http/cryptex.rs",
+      "reason": "zcash_client_backend `tor` feature, enabled by no Ycash component. FIXED alongside: the old code panicked when the trusted exchange failed and every other one answered (errors empty); the trusted error is now returned in that case. This arm runs only when the trusted query succeeded and others.len() >= 2 with rates.len() + 1 < 3, so at most one other succeeded and at least one pushed its error: errors is non-empty.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "924c34fc4dd967b4": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/chain.rs",
+      "reason": "blockdb_with_blocks: `from_height.expect(..)` runs only inside `if !from_height_found`, and `from_height_found` is initialised to `from_height.is_none()`, so the branch is entered only when `from_height` is Some. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "924c34fc4dd967b4-1": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/chain.rs",
+      "reason": "blockdb_with_blocks (after the loop): same guard, `from_height_found` starts as `from_height.is_none()`, so `!from_height_found` implies `from_height` is Some. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "924c34fc4dd967b4-2": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/chain.rs",
+      "reason": "fsblockdb_with_blocks: `from_height.expect(..)` inside `if !from_height_found`, where `from_height_found = from_height.is_none()`; entered only when `from_height` is Some. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "924c34fc4dd967b4-3": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/chain.rs",
+      "reason": "fsblockdb_with_blocks (after the loop): same guard as above, `!from_height_found` implies `from_height` is Some. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "7a698e57654ea6e8": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/chain/init.rs",
+      "reason": "init_blockmeta_db: `register_multiple(..).expect(..)` registers the crate's own static block-metadata migration set (migrations::blockmeta::all_migrations()); it fails only on a duplicate id or a dependency cycle in that compile-time list, which every init test exercises. Not reachable from database contents. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "ea1453e50b8321c0": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/init.rs",
+      "reason": "init_wallet_db_internal: `register_multiple(migrations::all_migrations(..)).expect(..)` registers the crate's own fixed migration DAG; it fails only on a duplicate id or cycle in that compile-time list (exercised by every wallet init test), never on database contents. Caller-supplied external migrations go through `?` on the next line. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "b947fa7af279ad17": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/init.rs",
+      "reason": "verify_sqlite_version_compatibility: `Regex::new(<string literal>).unwrap()` compiles a constant, valid pattern; it cannot fail at run time. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "5471278236a7a18d": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/lib.rs",
+      "reason": "get_notes is in `impl WalletTest for WalletDb` gated `#[cfg(any(test, feature = \"test-dependencies\"))]` (lib.rs:995); test-support code, not built into YEW or x402-ycash (neither enables test-dependencies). Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "ba10765d5c8a4b14": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/lib.rs",
+      "reason": "get_notes (second unwrap, same expression): in the `#[cfg(any(test, feature = \"test-dependencies\"))]` WalletTest impl (lib.rs:995); test-support code only. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "b4a456d328638819": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/lib.rs",
+      "reason": "sapling_tree: `PRUNING_DEPTH.try_into().unwrap()` converts the constant `PRUNING_DEPTH: u32 = 100` (lib.rs:161) to usize; cannot fail. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "b4a456d328638819-1": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/lib.rs",
+      "reason": "orchard_tree: `PRUNING_DEPTH.try_into().unwrap()` converts the constant 100u32 (lib.rs:161) to usize; cannot fail. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "ae073d5d45423a88": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/lib.rs",
+      "reason": "queue_rescans: folds a `NonEmpty<Range<_>>` whose first step maps None to Some, so the result is always Some; `.expect(\"rescan_ranges is nonempty\")` is guaranteed by the parameter type. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "67535c23bf722737": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet.rs",
+      "reason": "add_account (Sapling frontier): `PRUNING_DEPTH.try_into().unwrap()` on the constant 100u32 (lib.rs:161); cannot fail. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "67535c23bf722737-1": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet.rs",
+      "reason": "add_account (Orchard frontier): `PRUNING_DEPTH.try_into().unwrap()` on the constant 100u32 (lib.rs:161); cannot fail. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "34457e8c7d4c9459": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/init/migrations/shardtree_support.rs",
+      "reason": "shardtree_support migration: `PRUNING_DEPTH.try_into().unwrap()` on the constant 100u32 (lib.rs:161); cannot fail. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "69bd79707cc7aee8": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet.rs",
+      "reason": "get_next_available_address: `gap_limits.external().try_into().expect(..)` converts a u32 gap limit to usize; usize is at least 32 bits on every target the wallets build for (64-bit Android/iOS/desktop, wasm32), so it cannot fail. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "8679828b641e8387": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet.rs",
+      "reason": "get_next_available_address: `clock.now().duration_since(UNIX_EPOCH).expect(..)` fails only if the injected Clock (SystemClock in YEW/x402) reports a time before 1970; an environment invariant, not reachable from wallet data or the block stream. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "28bd4ee908ae33c0": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet.rs",
+      "reason": "parse_block_metadata: legacy path only, taken when `sapling_commitment_tree_size` IS NULL and `sapling_tree` != x'00'. This version's put_block always writes `sapling_tree = x'00'` (wallet.rs INSERT INTO blocks), so the path is reached only for rows written by pre-tree-size upstream versions (no Ycash wallet ever ran one); `tree.size()` of a depth-32 CommitmentTree overflows u32 only for a completely full 2^32-leaf tree. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "a5f685e3f6137406": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet.rs",
+      "reason": "store_transaction_to_be_sent: the External recipient with `output_pool == Transparent` is built by zcash_client_backend's create_proposed_transactions from an Address it parsed with the same `params`, so `Address::try_from_zcash_address(params, ..)` round-trips; input is the caller's own proposal, not DB contents or the block stream. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "3aedd6b041d84704": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet.rs",
+      "reason": "store_transaction_to_be_sent: `WalletTransparentOutput::from_parts(.., TxOut::new(.., taddr.script()), ..)` returns None only if the script is not P2PKH/P2SH; `taddr.script()` of a TransparentAddress is P2PKH or P2SH by construction. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "f7941d239feb4900": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet.rs",
+      "reason": "store_transaction_to_be_sent: `u32::try_from(output.output_index())` indexes an output of a transaction this wallet built; a transaction's output count is bounded by its consensus size limit (2 MB), far below 2^32. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "469e5cbc0f48f834": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet.rs",
+      "reason": "store_transaction_to_be_sent (EphemeralTransparent): `from_parts(.., ephemeral_address.script(), ..)` returns None only for a non-P2PKH/P2SH script; an ephemeral address is a P2PKH TransparentAddress, so its script always parses. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "671b5a0373f245ce": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/commitment_tree.rs",
+      "reason": "put_shard_roots: `batch_insert(..)` returns Ok(None) only for an empty iterator; the function returns early `if roots.is_empty()` (commitment_tree.rs put_shard_roots), so the expect is guarded. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "fc3ef05f0eb4e7ee": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/commitment_tree.rs",
+      "reason": "generate_orchard_witnesses_at_historical_height: `MemoryShardStore::put_shard` has `type Error = Infallible` (shardtree 0.6.2 store/memory.rs), so the expect cannot fire. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "cef578f91b2a7ec5": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/commitment_tree.rs",
+      "reason": "generate_orchard_witnesses_at_historical_height: `MemoryShardStore::put_cap` has `type Error = Infallible` (shardtree 0.6.2), so the expect cannot fire. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "75563f998501385e": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/common.rs",
+      "reason": "min_note_value: `NonZeroU64::new(100).expect(..)` on a literal nonzero constant; cannot fail. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "4689856d706cbe8c": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/init/migrations/ephemeral_addresses.rs",
+      "reason": "ephemeral_addresses migration: `NonHardenedChildIndex::from_index(i)` for i in 0..GapLimits::default().ephemeral() (a small constant, 5), far below 2^31; cannot fail. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "5785b77ffda637c2": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/init/migrations/full_account_ids.rs",
+      "reason": "full_account_ids migration: `SeedFingerprint::from_seed(seed)` fails only for a seed outside 32..=252 bytes; the seed is the secret the wallet application passes to init_wallet_db (YEW passes its 64-byte BIP39 seed), not database contents or the block stream. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "a6ecdacdd8f021e4": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/init/migrations/transparent_gap_limit_handling.rs",
+      "reason": "transparent_gap_limit_handling: `NonHardenedChildIndex::from_index(GapLimits::default().external())` on the default external gap limit constant (10), far below 2^31; cannot fail. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "8342f609c95baf5b": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/init/migrations/transparent_gap_limit_handling.rs",
+      "reason": "transparent_gap_limit_handling: `u32::try_from(rows.len())` counts ephemeral address rows, each with a u31 index (checked to be < 2^31 just above), per account; the count cannot reach 2^32 in a database this migration can load into memory. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "5ed64b026958bcb9": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/init/migrations/transparent_gap_limit_handling.rs",
+      "reason": "transparent_gap_limit_handling: `self._rng.lock().expect(..)` on the migration's own Mutex, which is only poisoned if a thread panicked while holding it; migrations run single-threaded inside one SQLite transaction. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "b48596f07810c3b2": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/init/migrations/transparent_gap_limit_handling.rs",
+      "reason": "transparent_gap_limit_handling: `next_check_time(..)` errs only if rand_distr::Exp::new rejects lambda = 1/interval, i.e. lambda < 0 or NaN; interval = 86400 / count with count >= 1 (loop body), so lambda is positive or +inf, both accepted. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "2fa19aac8c33bf04": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/init/migrations/transparent_gap_limit_handling.rs",
+      "reason": "transparent_gap_limit_handling: `epoch_seconds(next_check_time).unwrap()` fails only for a time before 1970 or beyond i64 seconds; next_check_time = clock.now() + a sampled delay, so only an injected clock set before 1970 reaches it (environment invariant, not data). Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "f180233632a86e7f": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/init/migrations/transparent_gap_limit_handling.rs",
+      "reason": "transparent_gap_limit_handling (Orchard notes): `uivk.orchard().expect(..)`; an Orchard received note is inserted only after trial decryption with this account's Orchard IVK, which the account's UIVK holds. The migration only finds rows on databases created by an upstream release older than it; a wallet DB created by YEW/x402 runs it at creation over empty tables. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "217df8fdac14abf5": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/init/migrations/transparent_gap_limit_handling.rs",
+      "reason": "transparent_gap_limit_handling (Orchard notes): `ivk.diversifier_index(&ivk.address(d)).expect(\"roundtrip\")` maps an address the same IVK just derived back to its index; orchard's diversifier_index decrypts d with dk and recomputes the address, which matches by construction. Also only runs on pre-existing upstream DBs. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "d8ac23da08375229": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/init/migrations/transparent_gap_limit_handling.rs",
+      "reason": "transparent_gap_limit_handling (Sapling notes): `uivk.sapling().expect(..)`; a Sapling received note is inserted only after trial decryption with this account's Sapling IVK, held by its UIVK. Only reached on databases created by an older upstream release (fresh YEW/x402 DBs run it over empty tables). Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "9b11d45263dd3ed2": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/init/migrations/transparent_gap_limit_handling.rs",
+      "reason": "transparent_gap_limit_handling (Sapling notes): `ivk.decrypt_diversifier(..).expect(\"roundtrip\")` on an address this IVK just generated from the note's own diversifier; FF1 decryption of a diversifier is total, so it returns the index. Only on pre-existing upstream DBs. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "4a104c5583dc5d27": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/init/migrations/transparent_gap_limit_handling.rs",
+      "reason": "transparent_gap_limit_handling (Sapling notes): `ivk.address(diversifier).expect(..)` is None only for a diversifier with no valid g_d; the stored diversifier is the one of a note this IVK already decrypted, which required a valid g_d. Only on pre-existing upstream DBs. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "0bb03fe642c21fb7": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/orchard.rs",
+      "reason": "orchard::ensure_address: reached only for recipient_key_scope External (DecryptedOutput returns Internal or External), i.e. Incoming outputs found by trial decryption with the account's Orchard IVK, so `uivk.orchard()` is Some for that account. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "415a4e8a233bc807": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/orchard.rs",
+      "reason": "orchard::ensure_address: `ivk.diversifier_index(&to)` for a note this IVK decrypted: pk_d = [ivk]g_d holds (decryption succeeded), and diversifier_index decrypts d with dk and recomputes the same address, so it matches; a crafted note cannot break this without already holding the IVK. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "6e03a258674471f7": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/sapling.rs",
+      "reason": "sapling::ensure_address: reached only for External-scope (Incoming) outputs, found by trial decryption with the account's Sapling IVK, so `uivk.sapling()` is Some for that account. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "4f7f7893ab10be6a": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/sapling.rs",
+      "reason": "sapling::ensure_address: `ivk.decrypt_diversifier(&to)` uses FF1 decryption of the 11-byte diversifier, which is total; for a note this IVK decrypted (pk_d = ivk*g_d) the recomputed address matches. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "6dd5e3333f0fd842": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/transparent.rs",
+      "reason": "reserve_next_n_addresses: `<Option<TransparentKeyScope>>::from(key_scope)` with `key_scope: TransparentKeyScope` is std's `impl<T> From<T> for Option<T>`, always Some. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "3bdfe56a23435d3e": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/transparent.rs",
+      "reason": "store_address_range: `zcash_address.convert::<ReceiverFlags>()` on the encoding of an Address the wallet derived itself (to_zcash_address of a parsed Address); ReceiverFlags converts from every address kind such an Address can encode to. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "cf5e01aa3532f9d1": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/transparent/ephemeral.rs",
+      "reason": "schedule_ephemeral_address_checks: `u32::try_from(rows.len())` inside `if let Some(..) = rows.last()`, so len >= 1 (no division by zero) and it counts address rows with u31 indices; cannot reach 2^32. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "af5c1247ae73e749": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/transparent/ephemeral.rs",
+      "reason": "get_known_ephemeral_addresses: `NonHardenedChildIndex::from_index(raw_index)` for rows selected with `transparent_child_index < :end` where :end <= NonHardenedChildIndex::MAX, so raw_index < 2^31. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "9d48e9f024f0daab": {
+      "rule": "rust.lang.security.unsafe-usage",
+      "path": "zcash_client_sqlite/src/testing/db.rs",
+      "reason": "zcash_client_sqlite/src/testing is declared `#[cfg(test)] mod testing;` (lib.rs:155); the unsafe block calls the test helper run_sqlite3 on a temp test DB. Non-production. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "0396b897b374f694": {
+      "rule": "rust.lang.security.unsafe-usage",
+      "path": "zcash_client_sqlite/src/testing/db.rs",
+      "reason": "zcash_client_sqlite/src/testing is `#[cfg(test)]` (lib.rs:155); test-only unsafe wrapper over the sqlite3 CLI helper. Non-production. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "3a54484f38ccbf19": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/testing/db.rs",
+      "reason": "zcash_client_sqlite/src/testing is `#[cfg(test)]` (lib.rs:155); test fixture (NamedTempFile::new().unwrap()). Non-production. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "cbdd64d54c65cba1": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/testing/db.rs",
+      "reason": "zcash_client_sqlite/src/testing is `#[cfg(test)]` (lib.rs:155); test fixture (WalletDb::for_path(..).unwrap()). Non-production. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "7a97a30268a9674d": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/testing/db.rs",
+      "reason": "zcash_client_sqlite/src/testing is `#[cfg(test)]` (lib.rs:155); test fixture migration unwrap. Non-production. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "da49e22df2cdc768": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/testing/db.rs",
+      "reason": "zcash_client_sqlite/src/testing is `#[cfg(test)]` (lib.rs:155); test fixture migration unwrap. Non-production. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
     }
   },
   "rule_paths": [
@@ -266,6 +1358,15 @@
       "reason": "Upstream librustzcash workflows kept as upstream wrote them except the scoping in each file's \"Ycash (2026-10-06)\" note: ci.yml and audits.yml run only for upstream's `main` (this fork has none), book.yml only on a push to `main`, and mutants.yml's schedule only in zcash/*; their tag-pinned toolchain/mdbook actions (dtolnay/rust-toolchain@stable and the like) are upstream's choice, so their findings are upstream's. The same files and reason as .github/zizmor.yml. ycash-fork.yml, the fork's own CI, has no entry and stays scanned.",
       "by": "semgrep CI setup",
       "date": "2026-10-22"
+    },
+    {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "paths": [
+        "zcash_client_memory/**"
+      ],
+      "reason": "zcash_client_memory is not shipped in any Ycash binary: it is an unpublished workspace member (version 0.0.0) that no other librustzcash6 crate depends on (only the root Cargo.toml `members` list names it), and none of the Ycash components checked depends on it:  ycash6/Cargo.toml and Cargo.lock (ycashd links only zcash_address/encoding/history/note_encryption/primitives/proofs/protocol/transparent), yew/core/Cargo.toml + yew/Cargo.lock, x402-ycash/light/Cargo.toml + Cargo.lock, hawkeye, yolo, chain-viz, yb-calibration and wyec (grep of every Cargo.toml/Cargo.lock in the workspace: no zcash_client_memory). The flagged unwrap/expect sites (RwLock poisoning, Zatoshis overflow, index conversions, build.rs OUT_DIR, #[cfg(test)] testing/) are upstream librustzcash code left unchanged to keep the fork delta minimal; any Ycash component that adds this crate as a dependency must remove this entry and triage the sites first.",
+      "by": "secops triage",
+      "date": "2026-10-23"
     }
   ]
 }

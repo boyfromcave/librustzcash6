@@ -467,12 +467,20 @@ impl<AccountId: Copy> Nullifiers<AccountId> {
 /// Errors that may occur in chain scanning
 #[derive(Clone, Debug)]
 pub enum ScanError {
-    /// The encoding of a compact Sapling output or compact Orchard action was invalid.
+    /// The encoding of a compact Sapling output or spend, or of a compact Orchard action, was
+    /// invalid.
     EncodingInvalid {
         at_height: BlockHeight,
         txid: TxId,
         pool_type: ShieldedProtocol,
         index: usize,
+    },
+
+    /// The index of a compact transaction within its block does not fit in 16 bits.
+    TxIndexInvalid {
+        at_height: BlockHeight,
+        txid: TxId,
+        index: u64,
     },
 
     /// The hash of the parent block given by a proposed new chain tip does not match the hash of
@@ -518,6 +526,7 @@ impl ScanError {
         use ScanError::*;
         match self {
             EncodingInvalid { .. } => false,
+            TxIndexInvalid { .. } => false,
             PrevHashMismatch { .. } => true,
             BlockHeightDiscontinuity { .. } => true,
             TreeSizeMismatch { .. } => true,
@@ -531,6 +540,7 @@ impl ScanError {
         use ScanError::*;
         match self {
             EncodingInvalid { at_height, .. } => *at_height,
+            TxIndexInvalid { at_height, .. } => *at_height,
             PrevHashMismatch { at_height } => *at_height,
             BlockHeightDiscontinuity { new_height, .. } => *new_height,
             TreeSizeMismatch { at_height, .. } => *at_height,
@@ -551,7 +561,11 @@ impl fmt::Display for ScanError {
                 ..
             } => write!(
                 f,
-                "{pool_type:?} output {index} of transaction {txid} was improperly encoded."
+                "{pool_type:?} output or spend {index} of transaction {txid} was improperly encoded."
+            ),
+            TxIndexInvalid { txid, index, .. } => write!(
+                f,
+                "Transaction {txid} has index {index}, which does not fit in a block."
             ),
             PrevHashMismatch { at_height } => write!(
                 f,
