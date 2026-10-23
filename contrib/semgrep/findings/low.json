@@ -1,0 +1,1782 @@
+{
+ "bucket": "low",
+ "sla_days": 180,
+ "findings": [
+  {
+   "fingerprint": "2545471e2792462c",
+   "rule": "rust.lang.security.unsafe-usage",
+   "path": "components/equihash/src/blake2b.rs",
+   "line": 19,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "d0d34b953aa82ee1",
+   "rule": "rust.lang.security.unsafe-usage",
+   "path": "components/equihash/src/blake2b.rs",
+   "line": 31,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "93f23d6f3b5e5916",
+   "rule": "rust.lang.security.unsafe-usage",
+   "path": "components/equihash/src/blake2b.rs",
+   "line": 39,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "888945813bf75957",
+   "rule": "rust.lang.security.unsafe-usage",
+   "path": "components/equihash/src/blake2b.rs",
+   "line": 45,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "0d33f3124ef7e672",
+   "rule": "rust.lang.security.unsafe-usage",
+   "path": "components/equihash/src/blake2b.rs",
+   "line": 46,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "888945813bf75957-1",
+   "rule": "rust.lang.security.unsafe-usage",
+   "path": "components/equihash/src/blake2b.rs",
+   "line": 53,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "b81ebe23e368e97f",
+   "rule": "rust.lang.security.unsafe-usage",
+   "path": "components/equihash/src/blake2b.rs",
+   "line": 54,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "fa3f0e25f141f55d",
+   "rule": "rust.lang.security.unsafe-usage",
+   "path": "components/equihash/src/tromp.rs",
+   "line": 53,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "b2782259a0de0534",
+   "rule": "rust.lang.security.unsafe-usage",
+   "path": "components/equihash/src/tromp.rs",
+   "line": 56,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "52e3f646d07a77cc",
+   "rule": "rust.lang.security.unsafe-usage",
+   "path": "components/equihash/src/tromp.rs",
+   "line": 57,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "2b68d93380c19ad9",
+   "rule": "rust.lang.security.unsafe-usage",
+   "path": "components/equihash/src/tromp.rs",
+   "line": 61,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "30142b6de3f57627",
+   "rule": "rust.lang.security.unsafe-usage",
+   "path": "components/equihash/src/tromp.rs",
+   "line": 63,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "52e3f646d07a77cc-1",
+   "rule": "rust.lang.security.unsafe-usage",
+   "path": "components/equihash/src/tromp.rs",
+   "line": 65,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "96816c86cc69895e",
+   "rule": "rust.lang.security.unsafe-usage",
+   "path": "components/equihash/src/tromp.rs",
+   "line": 69,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "cfeb3dafb124c687",
+   "rule": "rust.lang.security.unsafe-usage",
+   "path": "components/equihash/src/tromp.rs",
+   "line": 72,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "a09af0e9c6bfe09c",
+   "rule": "rust.lang.security.unsafe-usage",
+   "path": "components/equihash/src/tromp.rs",
+   "line": 73,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "f3f1a51820b737aa",
+   "rule": "rust.lang.security.unsafe-usage",
+   "path": "components/equihash/src/tromp.rs",
+   "line": 81,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "4cf8162dc29cac2b",
+   "rule": "rust.lang.security.unsafe-usage",
+   "path": "components/equihash/src/tromp.rs",
+   "line": 143,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "c889c5742333cc0b",
+   "rule": "rust.lang.security.unsafe-usage",
+   "path": "components/equihash/src/tromp.rs",
+   "line": 166,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "34ae270bd084b8eb",
+   "rule": "rust.lang.security.unsafe-usage",
+   "path": "components/equihash/src/tromp.rs",
+   "line": 175,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "e18dc7e4cac3cc13",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/build.rs",
+   "line": 36,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "317c7208e36d4234",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api.rs",
+   "line": 238,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "ac38abbf6a09ee47",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api.rs",
+   "line": 251,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "387347f8fce568b8",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api.rs",
+   "line": 265,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "7e0b87ac61f88a0c",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/ll/wallet.rs",
+   "line": 249,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "1520d6fcd38c031c",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/ll/wallet.rs",
+   "line": 253,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "71b1ca0fd4a4877d",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/ll/wallet.rs",
+   "line": 259,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "c22e8acb040011ad",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/ll/wallet.rs",
+   "line": 284,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "2b105ed64ad6b2c3",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/ll/wallet.rs",
+   "line": 296,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "6d5bf0e9621739df",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/ll/wallet.rs",
+   "line": 300,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "88c5053752544536",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/ll/wallet.rs",
+   "line": 866,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "e663541731e32605",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/ll/wallet.rs",
+   "line": 869,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "f0b340e147fc6bc8",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/ll/wallet.rs",
+   "line": 999,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "cf52afbb993de031",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/ll/wallet.rs",
+   "line": 1037,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "bc0e2986f0b01e9a",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/ll/wallet.rs",
+   "line": 1263,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "026f8c58be0f23a0",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/testing.rs",
+   "line": 930,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "9809c93d9b6ca8ea",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/wallet.rs",
+   "line": 727,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "1fc0c5cdad98ebba",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/wallet.rs",
+   "line": 1009,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "a5d952f41a92395e",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/wallet.rs",
+   "line": 1358,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "220af996c70d37cd",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/wallet.rs",
+   "line": 1445,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "29941ab9e53d8a6a",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/wallet.rs",
+   "line": 1536,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "cb5ffcf67aecac57",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/wallet.rs",
+   "line": 1540,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "d15ca5b9e16f91f7",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/wallet.rs",
+   "line": 1544,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "d143567750114fe3",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/wallet.rs",
+   "line": 1736,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "3fb1859486234379",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/wallet.rs",
+   "line": 1781,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "82f1029ccc37b4b3",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/wallet.rs",
+   "line": 1787,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "2ac4c86e65921b82",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/wallet.rs",
+   "line": 1810,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "84ebe8f5b1b6c2ed",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/wallet.rs",
+   "line": 1816,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "db8f39f9468ca77d",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/wallet.rs",
+   "line": 1960,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "fca402a300ed4b4c",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/wallet.rs",
+   "line": 1981,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "f8afea3323d1f40c",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/wallet.rs",
+   "line": 1994,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "f50aaff11c05f6e2",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/wallet.rs",
+   "line": 2011,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "2a9524763ab7b2d5",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/wallet.rs",
+   "line": 2036,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "30dce6dd02ec23d7",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/wallet.rs",
+   "line": 2065,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "2a9524763ab7b2d5-1",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/wallet.rs",
+   "line": 2092,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "7d05006855d2371a",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/wallet.rs",
+   "line": 2116,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "7e9e80a3fe962efd",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/wallet.rs",
+   "line": 2133,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "d3a50180f8a3da1d",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/wallet.rs",
+   "line": 2133,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "a4a013cece50e91c",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/wallet.rs",
+   "line": 2141,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "033372393c867d3d",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/wallet.rs",
+   "line": 2175,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "f03730be22a6a3f3",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/wallet.rs",
+   "line": 2403,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "4ce1e5d3afb8c6f0",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/wallet.rs",
+   "line": 2405,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "d59467ca270098ff",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/wallet.rs",
+   "line": 2568,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "5662e3999639d025",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/wallet/input_selection.rs",
+   "line": 471,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "67e5ae66f208bdec",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/wallet/input_selection.rs",
+   "line": 891,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "4e8e8d4dd103340c",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/wallet/input_selection.rs",
+   "line": 909,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "87f1b98c9a64446e",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/wallet/input_selection.rs",
+   "line": 921,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "a496c5b578d87026",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/wallet/input_selection.rs",
+   "line": 958,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "553d00543284c7cd",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/wallet/input_selection.rs",
+   "line": 1012,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "dc6925e74eafa0dc",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/wallet/input_selection.rs",
+   "line": 1035,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "95716ecbc09bb8a8",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/data_api/wallet/input_selection.rs",
+   "line": 1050,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "e80d55e77879f976",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/fees/common.rs",
+   "line": 466,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "e80d55e77879f976-1",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/fees/common.rs",
+   "line": 466,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "5e64c3ef80c6bf87",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/fees/common.rs",
+   "line": 476,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "7a604f37bb713f01",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/fees/common.rs",
+   "line": 524,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "d14bf69dd643e3e3",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/fees/common.rs",
+   "line": 639,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "a0dcbc58d02ef19a",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/fees/common.rs",
+   "line": 640,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "2ff82fa17d9c42ee",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/fees/common.rs",
+   "line": 641,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "a03924f571ef85fe",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/fees/common.rs",
+   "line": 741,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "6bb849d86010a2ed",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/proposal.rs",
+   "line": 498,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "7e3e21454f33308c",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/proto.rs",
+   "line": 738,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "560f50feff827805",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/proto.rs",
+   "line": 811,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "ee66fe116d990948",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/proto.rs",
+   "line": 816,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "560f50feff827805-1",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/proto.rs",
+   "line": 825,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "24923bf1e0d377f6",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/proto.rs",
+   "line": 830,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "c52cf8d26f3c57ac",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/scanning/compact.rs",
+   "line": 244,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "8061b4fb7fb516ad",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/scanning/compact.rs",
+   "line": 250,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "8061b4fb7fb516ad-1",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/scanning/compact.rs",
+   "line": 265,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "2f20f1442e6ed500",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/scanning/compact.rs",
+   "line": 447,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "7df0350a58311b67",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/scanning/compact.rs",
+   "line": 479,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "45049c6f3a1e8fe5",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/tor.rs",
+   "line": 54,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "8269854919669f55",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/tor/http.rs",
+   "line": 277,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "d01a12283b9d0883",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/tor/http.rs",
+   "line": 319,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "9391f20bbe6dd4f4",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/tor/http/cryptex.rs",
+   "line": 212,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "e4cd67bac7cbe8e6",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/tor/http/cryptex.rs",
+   "line": 240,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "df6f0d3fa63cc71e",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/tor/http/cryptex/binance.rs",
+   "line": 52,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "a0e3a99cebd29338",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/tor/http/cryptex/coin_ex.rs",
+   "line": 52,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "ced1279a2b6f7a4c",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/tor/http/cryptex/coinbase.rs",
+   "line": 40,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "dc4780e693391854",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/tor/http/cryptex/digi_finex.rs",
+   "line": 47,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "600c2b033f5dc9b4",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/tor/http/cryptex/gemini.rs",
+   "line": 38,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "befdd16efe259d6b",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/tor/http/cryptex/kraken.rs",
+   "line": 43,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "3dd6c06aec0b7ffd",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/tor/http/cryptex/ku_coin.rs",
+   "line": 54,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "1f1e45ab30d3518b",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/tor/http/cryptex/mexc.rs",
+   "line": 47,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "deefcfba026a65a3",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_backend/src/tor/http/cryptex/xt.rs",
+   "line": 45,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "ce4bf3952996d01c",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/build.rs",
+   "line": 28,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "98ecac2f16680c80",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/block_source.rs",
+   "line": 43,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "98ecac2f16680c80-1",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/block_source.rs",
+   "line": 68,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "98ecac2f16680c80-2",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/block_source.rs",
+   "line": 84,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "78a21c5dde294112",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/block_source.rs",
+   "line": 97,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "78a21c5dde294112-1",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/block_source.rs",
+   "line": 105,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "9d1f16accc5165cf",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/input_source.rs",
+   "line": 63,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "5cf3525a290d9f7b",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/input_source.rs",
+   "line": 283,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "e400b09b576ba2d0",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/input_source.rs",
+   "line": 306,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "683eee0f83f8e773",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/input_source.rs",
+   "line": 389,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "d8c44e4c13d0dfaa",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/input_source.rs",
+   "line": 399,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "4c3f19de250d17b0",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/input_source.rs",
+   "line": 404,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "10a2b38bc580bde6",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/testing/mod.rs",
+   "line": 137,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "479f38750b009f6d",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/testing/mod.rs",
+   "line": 138,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "e3680bae470a1417",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/testing/mod.rs",
+   "line": 148,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "f46459ef822c984b",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/types/account.rs",
+   "line": 323,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "7561e5fa213f0307",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/types/account.rs",
+   "line": 388,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "7cc9fb9073628d5f",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/types/account.rs",
+   "line": 409,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "608b33dd19a2affa",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/types/account.rs",
+   "line": 431,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "d3ee693bda79e56d",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/types/account.rs",
+   "line": 437,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "161a4f0132657c5b",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/types/account.rs",
+   "line": 481,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "161a4f0132657c5b-1",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/types/account.rs",
+   "line": 510,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "d5e692ec86853e30",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/types/memory_wallet/mod.rs",
+   "line": 224,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "7e2b9b0bdf1aaec0",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/types/memory_wallet/mod.rs",
+   "line": 272,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "218ab8b97bb5c038",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/types/memory_wallet/mod.rs",
+   "line": 283,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "c386aa7e64543251",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/types/memory_wallet/mod.rs",
+   "line": 439,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "c386aa7e64543251-1",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/types/memory_wallet/mod.rs",
+   "line": 443,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "b1f6b8dae5ca79ff",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/types/memory_wallet/mod.rs",
+   "line": 1056,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "9d0105f0c607ba52",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/types/notes/received.rs",
+   "line": 110,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "9d0105f0c607ba52-1",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/types/notes/received.rs",
+   "line": 127,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "ec2f2ecc56c8602a",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/types/notes/received.rs",
+   "line": 306,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "ec2f2ecc56c8602a-1",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/types/notes/received.rs",
+   "line": 329,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "52691436c15a3cbb",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/types/transparent.rs",
+   "line": 191,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "20d0c4ceea63ce83",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/wallet_commitment_trees.rs",
+   "line": 136,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "1a905270268d9fda",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/wallet_read.rs",
+   "line": 122,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "010c83a0451e233e",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/wallet_read.rs",
+   "line": 163,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "11dea2c664fceb93",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/wallet_read.rs",
+   "line": 167,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "32cf9522160031de",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/wallet_read.rs",
+   "line": 205,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "46f0197abf591ab9",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/wallet_read.rs",
+   "line": 245,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "32ae88425ff9d521",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/wallet_read.rs",
+   "line": 322,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "0b6a170230e753bf",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/wallet_read.rs",
+   "line": 668,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "ecfb6191d687c4c2",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/wallet_read.rs",
+   "line": 668,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "7529de5cfcb96025",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/wallet_write.rs",
+   "line": 297,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "f89377643637cd94",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/wallet_write.rs",
+   "line": 302,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "f04fcc6feb3a396b",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/wallet_write.rs",
+   "line": 344,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "f04fcc6feb3a396b-1",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/wallet_write.rs",
+   "line": 367,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "9d5f18fc6a4150cf",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/wallet_write.rs",
+   "line": 416,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "8c75f3dbcf7a1dba",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/wallet_write.rs",
+   "line": 420,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "b6107b8b7b9aaf26",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/wallet_write.rs",
+   "line": 453,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "b6107b8b7b9aaf26-1",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/wallet_write.rs",
+   "line": 470,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "91c4973447cca4a3",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/wallet_write.rs",
+   "line": 526,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "d8b731f2d0fc808f",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/wallet_write.rs",
+   "line": 567,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "ca9615492ea72ed3",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/wallet_write.rs",
+   "line": 836,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "d7e03956beb09eae",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/wallet_write.rs",
+   "line": 839,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "bff68fa235eb89cf",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/wallet_write.rs",
+   "line": 996,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "48392ea933afa9c9",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/wallet_write.rs",
+   "line": 1168,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "276b1f12cc9dd6f9",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/wallet_write.rs",
+   "line": 1221,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "4221b66212dec4e1",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/wallet_write.rs",
+   "line": 1236,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "43a7bba4d4bad84a",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_memory/src/wallet_write.rs",
+   "line": 1237,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "924c34fc4dd967b4",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/chain.rs",
+   "line": 67,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "924c34fc4dd967b4-1",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/chain.rs",
+   "line": 89,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "924c34fc4dd967b4-2",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/chain.rs",
+   "line": 292,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "924c34fc4dd967b4-3",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/chain.rs",
+   "line": 321,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "40c14980bbbcf1dd",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/chain/init.rs",
+   "line": 62,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "7a698e57654ea6e8",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/chain/init.rs",
+   "line": 65,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "ae073d5d45423a88",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/lib.rs",
+   "line": 417,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "9bf1bc76aae8a063",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/lib.rs",
+   "line": 710,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "5471278236a7a18d",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/lib.rs",
+   "line": 1156,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "ba10765d5c8a4b14",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/lib.rs",
+   "line": 1156,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "b4a456d328638819",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/lib.rs",
+   "line": 2213,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "b4a456d328638819-1",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/lib.rs",
+   "line": 2239,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "9d48e9f024f0daab",
+   "rule": "rust.lang.security.unsafe-usage",
+   "path": "zcash_client_sqlite/src/testing/db.rs",
+   "line": 121,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "0396b897b374f694",
+   "rule": "rust.lang.security.unsafe-usage",
+   "path": "zcash_client_sqlite/src/testing/db.rs",
+   "line": 136,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "3a54484f38ccbf19",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/testing/db.rs",
+   "line": 189,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "cbdd64d54c65cba1",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/testing/db.rs",
+   "line": 191,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "7a97a30268a9674d",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/testing/db.rs",
+   "line": 199,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "da49e22df2cdc768",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/testing/db.rs",
+   "line": 203,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "67535c23bf722737",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/wallet.rs",
+   "line": 591,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "67535c23bf722737-1",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/wallet.rs",
+   "line": 618,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "69bd79707cc7aee8",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/wallet.rs",
+   "line": 1018,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "8679828b641e8387",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/wallet.rs",
+   "line": 1040,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "28bd4ee908ae33c0",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/wallet.rs",
+   "line": 3148,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "a5f685e3f6137406",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/wallet.rs",
+   "line": 3411,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "3aedd6b041d84704",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/wallet.rs",
+   "line": 3423,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "f7941d239feb4900",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/wallet.rs",
+   "line": 3426,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "469e5cbc0f48f834",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/wallet.rs",
+   "line": 3499,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "671b5a0373f245ce",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/wallet/commitment_tree.rs",
+   "line": 1066,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "fc3ef05f0eb4e7ee",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/wallet/commitment_tree.rs",
+   "line": 1248,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "cef578f91b2a7ec5",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/wallet/commitment_tree.rs",
+   "line": 1253,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "75563f998501385e",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/wallet/common.rs",
+   "line": 925,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "2a896cd87bcd8367",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/wallet/init.rs",
+   "line": 595,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "ea1453e50b8321c0",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/wallet/init.rs",
+   "line": 607,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "b947fa7af279ad17",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/wallet/init.rs",
+   "line": 668,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "4689856d706cbe8c",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/wallet/init/migrations/ephemeral_addresses.rs",
+   "line": 82,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "5785b77ffda637c2",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/wallet/init/migrations/full_account_ids.rs",
+   "line": 110,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "34457e8c7d4c9459",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/wallet/init/migrations/shardtree_support.rs",
+   "line": 112,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "a6ecdacdd8f021e4",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/wallet/init/migrations/transparent_gap_limit_handling.rs",
+   "line": 143,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "8342f609c95baf5b",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/wallet/init/migrations/transparent_gap_limit_handling.rs",
+   "line": 386,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "5ed64b026958bcb9",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/wallet/init/migrations/transparent_gap_limit_handling.rs",
+   "line": 402,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "b48596f07810c3b2",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/wallet/init/migrations/transparent_gap_limit_handling.rs",
+   "line": 407,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "2fa19aac8c33bf04",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/wallet/init/migrations/transparent_gap_limit_handling.rs",
+   "line": 410,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "f180233632a86e7f",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/wallet/init/migrations/transparent_gap_limit_handling.rs",
+   "line": 514,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "217df8fdac14abf5",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/wallet/init/migrations/transparent_gap_limit_handling.rs",
+   "line": 518,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "d8ac23da08375229",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/wallet/init/migrations/transparent_gap_limit_handling.rs",
+   "line": 575,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "9b11d45263dd3ed2",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/wallet/init/migrations/transparent_gap_limit_handling.rs",
+   "line": 579,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "4a104c5583dc5d27",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/wallet/init/migrations/transparent_gap_limit_handling.rs",
+   "line": 581,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "0bb03fe642c21fb7",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/wallet/orchard.rs",
+   "line": 252,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "415a4e8a233bc807",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/wallet/orchard.rs",
+   "line": 257,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "6e03a258674471f7",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/wallet/sapling.rs",
+   "line": 301,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "4f7f7893ab10be6a",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/wallet/sapling.rs",
+   "line": 306,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "6dd5e3333f0fd842",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/wallet/transparent.rs",
+   "line": 601,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "3bdfe56a23435d3e",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/wallet/transparent.rs",
+   "line": 739,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "af5c1247ae73e749",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/wallet/transparent/ephemeral.rs",
+   "line": 95,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "cf5e01aa3532f9d1",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_client_sqlite/src/wallet/transparent/ephemeral.rs",
+   "line": 198,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "1a724b1871336c27",
+   "rule": "rust.lang.security.args",
+   "path": "zcash_history/examples/long.rs",
+   "line": 83,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "d56f568f5cf44add",
+   "rule": "rust.lang.security.args",
+   "path": "zcash_history/examples/write.rs",
+   "line": 11,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "f4ea7d802b58c795",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_primitives/src/transaction/tests.rs",
+   "line": 60,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  },
+  {
+   "fingerprint": "572487b0307c9eb6",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_primitives/src/transaction/tests.rs",
+   "line": 61,
+   "first_seen": "2026-10-23",
+   "due": "2027-04-21"
+  }
+ ]
+}
