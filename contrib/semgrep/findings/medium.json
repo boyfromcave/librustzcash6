@@ -1,0 +1,246 @@
+{
+ "bucket": "medium",
+ "sla_days": 90,
+ "findings": [
+  {
+   "fingerprint": "0908142db068f68b",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "components/eip681/src/parse.rs",
+   "line": 331,
+   "first_seen": "2026-10-23",
+   "due": "2027-01-21"
+  },
+  {
+   "fingerprint": "3b9362b496a91496",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "components/eip681/src/parse.rs",
+   "line": 335,
+   "first_seen": "2026-10-23",
+   "due": "2027-01-21"
+  },
+  {
+   "fingerprint": "17e7cc844f9c9e68",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "components/zcash_address/src/encoding.rs",
+   "line": 122,
+   "first_seen": "2026-10-23",
+   "due": "2027-01-21"
+  },
+  {
+   "fingerprint": "99d70a5550d5e274",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "components/zcash_address/src/kind/unified.rs",
+   "line": 266,
+   "first_seen": "2026-10-23",
+   "due": "2027-01-21"
+  },
+  {
+   "fingerprint": "904937e7978105aa",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "components/zcash_address/src/kind/unified.rs",
+   "line": 323,
+   "first_seen": "2026-10-23",
+   "due": "2027-01-21"
+  },
+  {
+   "fingerprint": "e56c2a7d21f48a9e",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "components/zcash_protocol/src/memo.rs",
+   "line": 220,
+   "first_seen": "2026-10-23",
+   "due": "2027-01-21"
+  },
+  {
+   "fingerprint": "4e1de1d894fa3c45",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "pczt/src/lib.rs",
+   "line": 93,
+   "first_seen": "2026-10-23",
+   "due": "2027-01-21"
+  },
+  {
+   "fingerprint": "d73628dfffc8c876",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "pczt/src/roles/tx_extractor/mod.rs",
+   "line": 119,
+   "first_seen": "2026-10-23",
+   "due": "2027-01-21"
+  },
+  {
+   "fingerprint": "9d264786881cd384",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_history/src/tree.rs",
+   "line": 152,
+   "first_seen": "2026-10-23",
+   "due": "2027-01-21"
+  },
+  {
+   "fingerprint": "370074b053627542",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_history/src/tree.rs",
+   "line": 175,
+   "first_seen": "2026-10-23",
+   "due": "2027-01-21"
+  },
+  {
+   "fingerprint": "3deae36f2ce46edb",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_history/src/tree.rs",
+   "line": 248,
+   "first_seen": "2026-10-23",
+   "due": "2027-01-21"
+  },
+  {
+   "fingerprint": "80d9aa1e0da4f01a",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_keys/src/keys.rs",
+   "line": 468,
+   "first_seen": "2026-10-23",
+   "due": "2027-01-21"
+  },
+  {
+   "fingerprint": "e9e691548d359904",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_keys/src/keys.rs",
+   "line": 470,
+   "first_seen": "2026-10-23",
+   "due": "2027-01-21"
+  },
+  {
+   "fingerprint": "b77dee2e89041e0a",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_keys/src/keys.rs",
+   "line": 472,
+   "first_seen": "2026-10-23",
+   "due": "2027-01-21"
+  },
+  {
+   "fingerprint": "9085f3c2a57ea4b1",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_keys/src/keys/zcashd.rs",
+   "line": 130,
+   "first_seen": "2026-10-23",
+   "due": "2027-01-21"
+  },
+  {
+   "fingerprint": "aa1b800c43c11106",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_primitives/src/block.rs",
+   "line": 224,
+   "first_seen": "2026-10-23",
+   "due": "2027-01-21"
+  },
+  {
+   "fingerprint": "7abc8e4c72b21c95",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_primitives/src/block.rs",
+   "line": 255,
+   "first_seen": "2026-10-23",
+   "due": "2027-01-21"
+  },
+  {
+   "fingerprint": "31c7024190ca9c6d",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_primitives/src/merkle_tree.rs",
+   "line": 124,
+   "first_seen": "2026-10-23",
+   "due": "2027-01-21"
+  },
+  {
+   "fingerprint": "3eb9001573f4b5be",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_primitives/src/transaction/builder.rs",
+   "line": 1185,
+   "first_seen": "2026-10-23",
+   "due": "2027-01-21"
+  },
+  {
+   "fingerprint": "003f39fde4409777",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_primitives/src/transaction/components/orchard.rs",
+   "line": 64,
+   "first_seen": "2026-10-23",
+   "due": "2027-01-21"
+  },
+  {
+   "fingerprint": "ef6bf5f7e6019372",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_primitives/src/transaction/components/orchard.rs",
+   "line": 111,
+   "first_seen": "2026-10-23",
+   "due": "2027-01-21"
+  },
+  {
+   "fingerprint": "1c8c03d22c542ecf",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_primitives/src/transaction/components/orchard.rs",
+   "line": 125,
+   "first_seen": "2026-10-23",
+   "due": "2027-01-21"
+  },
+  {
+   "fingerprint": "a2af3fff5bd4cd73",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_primitives/src/transaction/components/sapling.rs",
+   "line": 98,
+   "first_seen": "2026-10-23",
+   "due": "2027-01-21"
+  },
+  {
+   "fingerprint": "9dc70e8227c15140",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_primitives/src/transaction/components/sapling.rs",
+   "line": 431,
+   "first_seen": "2026-10-23",
+   "due": "2027-01-21"
+  },
+  {
+   "fingerprint": "20c4bf729436c828",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_proofs/src/circuit/sprout/mod.rs",
+   "line": 84,
+   "first_seen": "2026-10-23",
+   "due": "2027-01-21"
+  },
+  {
+   "fingerprint": "fcebe04ec463ff6c",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_proofs/src/lib.rs",
+   "line": 196,
+   "first_seen": "2026-10-23",
+   "due": "2027-01-21"
+  },
+  {
+   "fingerprint": "11496fde93e4ad7d",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_transparent/src/builder.rs",
+   "line": 691,
+   "first_seen": "2026-10-23",
+   "due": "2027-01-21"
+  },
+  {
+   "fingerprint": "87f4e492e17e3bc4",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_transparent/src/keys.rs",
+   "line": 466,
+   "first_seen": "2026-10-23",
+   "due": "2027-01-21"
+  },
+  {
+   "fingerprint": "70cbfc73fa8eb502",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_transparent/src/keys.rs",
+   "line": 475,
+   "first_seen": "2026-10-23",
+   "due": "2027-01-21"
+  },
+  {
+   "fingerprint": "87f4e492e17e3bc4-1",
+   "rule": "trailofbits.rs.panic-in-function-returning-result",
+   "path": "zcash_transparent/src/keys.rs",
+   "line": 548,
+   "first_seen": "2026-10-23",
+   "due": "2027-01-21"
+  }
+ ]
+}
