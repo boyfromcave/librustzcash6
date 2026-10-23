@@ -87,6 +87,11 @@ ignoreUntil = 2027-01-20
 reason = "time 0.3.36 stack-exhaustion DoS in its parser: upstream pins time-core =0.1.2 (workspace Cargo.toml, MSRV), which blocks 0.3.47; used by the wallet crates (zcash_client_*) on their own data; not in the six crates"
 
 [[IgnoredVulns]]
+id = "RUSTSEC-2026-0386"
+ignoreUntil = 2027-01-21
+reason = "tokio 1.38.2 AsyncFd safe constructors violate I/O safety (fixed by deprecation in 1.51.6/1.53.3): pulled in by zcash_client_backend (`lightwalletd-tonic`, `tor`: tonic, hyper, arti/tor-rtcompat) and zcash_client_memory; nothing in the fork or those dependencies constructs an AsyncFd; `cargo update -p tokio --precise 1.53.3` does not resolve (it needs socket2 >=0.6.3, held at 0.6.1 by tonic 0.14.2); not in the six crates"
+
+[[IgnoredVulns]]
 id = "GHSA-7gcf-g7xr-8hxj"
 ignoreUntil = 2027-01-20
 reason = "serde_with 3.16 (pczt, eip681, wallet crates): 3.21 needs a newer time/time-core than upstream's =0.1.2 pin allows; not in the six crates"
