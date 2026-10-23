@@ -7,6 +7,10 @@ and this library adheres to Rust's notion of
 
 ## [Unreleased]
 
+### Fixed
+- `tromp` (behind the `solver` feature): a solver run that finds more than the C solver's
+  `MAXSOLS` (8) candidate solutions no longer reads past its solution buffer.
+
 ## [0.3.0] - 2026-04-23
 
 ### Changed

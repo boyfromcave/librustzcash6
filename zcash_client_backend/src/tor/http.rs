@@ -274,7 +274,9 @@ where
             .with_root_certificates(root_store)
             .with_no_client_auth();
         let connector = TlsConnector::from(Arc::new(config));
-        let dnsname = ServerName::try_from(host).expect("Already checked");
+        // `parse_url` only checks that a host is present, not that it is a valid DNS name.
+        let dnsname = ServerName::try_from(host)
+            .map_err(|e| HttpError::Tls(io::Error::new(io::ErrorKind::InvalidInput, e)))?;
         let stream = connector
             .connect(dnsname, stream)
             .await
