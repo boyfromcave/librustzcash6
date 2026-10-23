@@ -86,4 +86,5 @@ ignore = [
     { id = "RUSTSEC-2026-0382", reason = "rustls-webpki 0.101: as RUSTSEC-2026-0346 (minreq in zcash_proofs `download-params`); 0.103 is bumped to the fix" },
     { id = "RUSTSEC-2026-0381", reason = "webpki-roots 0.25: as RUSTSEC-2026-0346 (minreq in zcash_proofs `download-params`); 1.0 is bumped to the fix" },
     { id = "RUSTSEC-2026-0009", reason = "time 0.3.36 stack-exhaustion DoS in its parser: upstream pins time-core =0.1.2 (Cargo.toml, MSRV), which blocks 0.3.47; used by the wallet crates (zcash_client_*) on their own data; not in the six crates" },
+    { id = "RUSTSEC-2026-0386", reason = "tokio 1.38.2 AsyncFd safe constructors violate I/O safety (fixed by deprecation in 1.51.6/1.53.3): pulled in by zcash_client_backend (`lightwalletd-tonic`, `tor`: tonic, hyper, arti/tor-rtcompat) and zcash_client_memory; nothing in the fork or those dependencies constructs an AsyncFd; `cargo update -p tokio --precise 1.53.3` does not resolve (it needs socket2 >=0.6.3, held at 0.6.1 by tonic 0.14.2); not in the six crates" },
 ]
