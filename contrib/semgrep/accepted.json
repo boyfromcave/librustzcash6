@@ -252,6 +252,370 @@
       "reason": "IncomingViewingKey deserialize (second identical site in keys.rs): `data[..32].try_into().expect(\"correct length\")` converts the first 32 bytes of a `&[u8; 65]` to [u8; 32]; the length is fixed by the parameter type. Upstream librustzcash code, unchanged by the fork.",
       "by": "secops triage",
       "date": "2026-10-23"
+    },
+    "924c34fc4dd967b4": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/chain.rs",
+      "reason": "blockdb_with_blocks: `from_height.expect(..)` runs only inside `if !from_height_found`, and `from_height_found` is initialised to `from_height.is_none()`, so the branch is entered only when `from_height` is Some. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "924c34fc4dd967b4-1": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/chain.rs",
+      "reason": "blockdb_with_blocks (after the loop): same guard, `from_height_found` starts as `from_height.is_none()`, so `!from_height_found` implies `from_height` is Some. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "924c34fc4dd967b4-2": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/chain.rs",
+      "reason": "fsblockdb_with_blocks: `from_height.expect(..)` inside `if !from_height_found`, where `from_height_found = from_height.is_none()`; entered only when `from_height` is Some. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "924c34fc4dd967b4-3": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/chain.rs",
+      "reason": "fsblockdb_with_blocks (after the loop): same guard as above, `!from_height_found` implies `from_height` is Some. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "7a698e57654ea6e8": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/chain/init.rs",
+      "reason": "init_blockmeta_db: `register_multiple(..).expect(..)` registers the crate's own static block-metadata migration set (migrations::blockmeta::all_migrations()); it fails only on a duplicate id or a dependency cycle in that compile-time list, which every init test exercises. Not reachable from database contents. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "ea1453e50b8321c0": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/init.rs",
+      "reason": "init_wallet_db_internal: `register_multiple(migrations::all_migrations(..)).expect(..)` registers the crate's own fixed migration DAG; it fails only on a duplicate id or cycle in that compile-time list (exercised by every wallet init test), never on database contents. Caller-supplied external migrations go through `?` on the next line. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "b947fa7af279ad17": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/init.rs",
+      "reason": "verify_sqlite_version_compatibility: `Regex::new(<string literal>).unwrap()` compiles a constant, valid pattern; it cannot fail at run time. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "5471278236a7a18d": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/lib.rs",
+      "reason": "get_notes is in `impl WalletTest for WalletDb` gated `#[cfg(any(test, feature = \"test-dependencies\"))]` (lib.rs:995); test-support code, not built into YEW or x402-ycash (neither enables test-dependencies). Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "ba10765d5c8a4b14": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/lib.rs",
+      "reason": "get_notes (second unwrap, same expression): in the `#[cfg(any(test, feature = \"test-dependencies\"))]` WalletTest impl (lib.rs:995); test-support code only. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "b4a456d328638819": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/lib.rs",
+      "reason": "sapling_tree: `PRUNING_DEPTH.try_into().unwrap()` converts the constant `PRUNING_DEPTH: u32 = 100` (lib.rs:161) to usize; cannot fail. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "b4a456d328638819-1": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/lib.rs",
+      "reason": "orchard_tree: `PRUNING_DEPTH.try_into().unwrap()` converts the constant 100u32 (lib.rs:161) to usize; cannot fail. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "ae073d5d45423a88": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/lib.rs",
+      "reason": "queue_rescans: folds a `NonEmpty<Range<_>>` whose first step maps None to Some, so the result is always Some; `.expect(\"rescan_ranges is nonempty\")` is guaranteed by the parameter type. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "67535c23bf722737": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet.rs",
+      "reason": "add_account (Sapling frontier): `PRUNING_DEPTH.try_into().unwrap()` on the constant 100u32 (lib.rs:161); cannot fail. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "67535c23bf722737-1": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet.rs",
+      "reason": "add_account (Orchard frontier): `PRUNING_DEPTH.try_into().unwrap()` on the constant 100u32 (lib.rs:161); cannot fail. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "34457e8c7d4c9459": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/init/migrations/shardtree_support.rs",
+      "reason": "shardtree_support migration: `PRUNING_DEPTH.try_into().unwrap()` on the constant 100u32 (lib.rs:161); cannot fail. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "69bd79707cc7aee8": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet.rs",
+      "reason": "get_next_available_address: `gap_limits.external().try_into().expect(..)` converts a u32 gap limit to usize; usize is at least 32 bits on every target the wallets build for (64-bit Android/iOS/desktop, wasm32), so it cannot fail. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "8679828b641e8387": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet.rs",
+      "reason": "get_next_available_address: `clock.now().duration_since(UNIX_EPOCH).expect(..)` fails only if the injected Clock (SystemClock in YEW/x402) reports a time before 1970; an environment invariant, not reachable from wallet data or the block stream. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "28bd4ee908ae33c0": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet.rs",
+      "reason": "parse_block_metadata: legacy path only, taken when `sapling_commitment_tree_size` IS NULL and `sapling_tree` != x'00'. This version's put_block always writes `sapling_tree = x'00'` (wallet.rs INSERT INTO blocks), so the path is reached only for rows written by pre-tree-size upstream versions (no Ycash wallet ever ran one); `tree.size()` of a depth-32 CommitmentTree overflows u32 only for a completely full 2^32-leaf tree. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "a5f685e3f6137406": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet.rs",
+      "reason": "store_transaction_to_be_sent: the External recipient with `output_pool == Transparent` is built by zcash_client_backend's create_proposed_transactions from an Address it parsed with the same `params`, so `Address::try_from_zcash_address(params, ..)` round-trips; input is the caller's own proposal, not DB contents or the block stream. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "3aedd6b041d84704": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet.rs",
+      "reason": "store_transaction_to_be_sent: `WalletTransparentOutput::from_parts(.., TxOut::new(.., taddr.script()), ..)` returns None only if the script is not P2PKH/P2SH; `taddr.script()` of a TransparentAddress is P2PKH or P2SH by construction. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "f7941d239feb4900": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet.rs",
+      "reason": "store_transaction_to_be_sent: `u32::try_from(output.output_index())` indexes an output of a transaction this wallet built; a transaction's output count is bounded by its consensus size limit (2 MB), far below 2^32. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "469e5cbc0f48f834": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet.rs",
+      "reason": "store_transaction_to_be_sent (EphemeralTransparent): `from_parts(.., ephemeral_address.script(), ..)` returns None only for a non-P2PKH/P2SH script; an ephemeral address is a P2PKH TransparentAddress, so its script always parses. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "671b5a0373f245ce": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/commitment_tree.rs",
+      "reason": "put_shard_roots: `batch_insert(..)` returns Ok(None) only for an empty iterator; the function returns early `if roots.is_empty()` (commitment_tree.rs put_shard_roots), so the expect is guarded. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "fc3ef05f0eb4e7ee": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/commitment_tree.rs",
+      "reason": "generate_orchard_witnesses_at_historical_height: `MemoryShardStore::put_shard` has `type Error = Infallible` (shardtree 0.6.2 store/memory.rs), so the expect cannot fire. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "cef578f91b2a7ec5": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/commitment_tree.rs",
+      "reason": "generate_orchard_witnesses_at_historical_height: `MemoryShardStore::put_cap` has `type Error = Infallible` (shardtree 0.6.2), so the expect cannot fire. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "75563f998501385e": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/common.rs",
+      "reason": "min_note_value: `NonZeroU64::new(100).expect(..)` on a literal nonzero constant; cannot fail. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "4689856d706cbe8c": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/init/migrations/ephemeral_addresses.rs",
+      "reason": "ephemeral_addresses migration: `NonHardenedChildIndex::from_index(i)` for i in 0..GapLimits::default().ephemeral() (a small constant, 5), far below 2^31; cannot fail. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "5785b77ffda637c2": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/init/migrations/full_account_ids.rs",
+      "reason": "full_account_ids migration: `SeedFingerprint::from_seed(seed)` fails only for a seed outside 32..=252 bytes; the seed is the secret the wallet application passes to init_wallet_db (YEW passes its 64-byte BIP39 seed), not database contents or the block stream. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "a6ecdacdd8f021e4": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/init/migrations/transparent_gap_limit_handling.rs",
+      "reason": "transparent_gap_limit_handling: `NonHardenedChildIndex::from_index(GapLimits::default().external())` on the default external gap limit constant (10), far below 2^31; cannot fail. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "8342f609c95baf5b": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/init/migrations/transparent_gap_limit_handling.rs",
+      "reason": "transparent_gap_limit_handling: `u32::try_from(rows.len())` counts ephemeral address rows, each with a u31 index (checked to be < 2^31 just above), per account; the count cannot reach 2^32 in a database this migration can load into memory. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "5ed64b026958bcb9": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/init/migrations/transparent_gap_limit_handling.rs",
+      "reason": "transparent_gap_limit_handling: `self._rng.lock().expect(..)` on the migration's own Mutex, which is only poisoned if a thread panicked while holding it; migrations run single-threaded inside one SQLite transaction. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "b48596f07810c3b2": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/init/migrations/transparent_gap_limit_handling.rs",
+      "reason": "transparent_gap_limit_handling: `next_check_time(..)` errs only if rand_distr::Exp::new rejects lambda = 1/interval, i.e. lambda < 0 or NaN; interval = 86400 / count with count >= 1 (loop body), so lambda is positive or +inf, both accepted. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "2fa19aac8c33bf04": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/init/migrations/transparent_gap_limit_handling.rs",
+      "reason": "transparent_gap_limit_handling: `epoch_seconds(next_check_time).unwrap()` fails only for a time before 1970 or beyond i64 seconds; next_check_time = clock.now() + a sampled delay, so only an injected clock set before 1970 reaches it (environment invariant, not data). Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "f180233632a86e7f": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/init/migrations/transparent_gap_limit_handling.rs",
+      "reason": "transparent_gap_limit_handling (Orchard notes): `uivk.orchard().expect(..)`; an Orchard received note is inserted only after trial decryption with this account's Orchard IVK, which the account's UIVK holds. The migration only finds rows on databases created by an upstream release older than it; a wallet DB created by YEW/x402 runs it at creation over empty tables. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "217df8fdac14abf5": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/init/migrations/transparent_gap_limit_handling.rs",
+      "reason": "transparent_gap_limit_handling (Orchard notes): `ivk.diversifier_index(&ivk.address(d)).expect(\"roundtrip\")` maps an address the same IVK just derived back to its index; orchard's diversifier_index decrypts d with dk and recomputes the address, which matches by construction. Also only runs on pre-existing upstream DBs. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "d8ac23da08375229": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/init/migrations/transparent_gap_limit_handling.rs",
+      "reason": "transparent_gap_limit_handling (Sapling notes): `uivk.sapling().expect(..)`; a Sapling received note is inserted only after trial decryption with this account's Sapling IVK, held by its UIVK. Only reached on databases created by an older upstream release (fresh YEW/x402 DBs run it over empty tables). Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "9b11d45263dd3ed2": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/init/migrations/transparent_gap_limit_handling.rs",
+      "reason": "transparent_gap_limit_handling (Sapling notes): `ivk.decrypt_diversifier(..).expect(\"roundtrip\")` on an address this IVK just generated from the note's own diversifier; FF1 decryption of a diversifier is total, so it returns the index. Only on pre-existing upstream DBs. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "4a104c5583dc5d27": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/init/migrations/transparent_gap_limit_handling.rs",
+      "reason": "transparent_gap_limit_handling (Sapling notes): `ivk.address(diversifier).expect(..)` is None only for a diversifier with no valid g_d; the stored diversifier is the one of a note this IVK already decrypted, which required a valid g_d. Only on pre-existing upstream DBs. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "0bb03fe642c21fb7": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/orchard.rs",
+      "reason": "orchard::ensure_address: reached only for recipient_key_scope External (DecryptedOutput returns Internal or External), i.e. Incoming outputs found by trial decryption with the account's Orchard IVK, so `uivk.orchard()` is Some for that account. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "415a4e8a233bc807": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/orchard.rs",
+      "reason": "orchard::ensure_address: `ivk.diversifier_index(&to)` for a note this IVK decrypted: pk_d = [ivk]g_d holds (decryption succeeded), and diversifier_index decrypts d with dk and recomputes the same address, so it matches; a crafted note cannot break this without already holding the IVK. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "6e03a258674471f7": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/sapling.rs",
+      "reason": "sapling::ensure_address: reached only for External-scope (Incoming) outputs, found by trial decryption with the account's Sapling IVK, so `uivk.sapling()` is Some for that account. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "4f7f7893ab10be6a": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/sapling.rs",
+      "reason": "sapling::ensure_address: `ivk.decrypt_diversifier(&to)` uses FF1 decryption of the 11-byte diversifier, which is total; for a note this IVK decrypted (pk_d = ivk*g_d) the recomputed address matches. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "6dd5e3333f0fd842": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/transparent.rs",
+      "reason": "reserve_next_n_addresses: `<Option<TransparentKeyScope>>::from(key_scope)` with `key_scope: TransparentKeyScope` is std's `impl<T> From<T> for Option<T>`, always Some. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "3bdfe56a23435d3e": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/transparent.rs",
+      "reason": "store_address_range: `zcash_address.convert::<ReceiverFlags>()` on the encoding of an Address the wallet derived itself (to_zcash_address of a parsed Address); ReceiverFlags converts from every address kind such an Address can encode to. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "cf5e01aa3532f9d1": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/transparent/ephemeral.rs",
+      "reason": "schedule_ephemeral_address_checks: `u32::try_from(rows.len())` inside `if let Some(..) = rows.last()`, so len >= 1 (no division by zero) and it counts address rows with u31 indices; cannot reach 2^32. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "af5c1247ae73e749": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/wallet/transparent/ephemeral.rs",
+      "reason": "get_known_ephemeral_addresses: `NonHardenedChildIndex::from_index(raw_index)` for rows selected with `transparent_child_index < :end` where :end <= NonHardenedChildIndex::MAX, so raw_index < 2^31. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "9d48e9f024f0daab": {
+      "rule": "rust.lang.security.unsafe-usage",
+      "path": "zcash_client_sqlite/src/testing/db.rs",
+      "reason": "zcash_client_sqlite/src/testing is declared `#[cfg(test)] mod testing;` (lib.rs:155); the unsafe block calls the test helper run_sqlite3 on a temp test DB. Non-production. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "0396b897b374f694": {
+      "rule": "rust.lang.security.unsafe-usage",
+      "path": "zcash_client_sqlite/src/testing/db.rs",
+      "reason": "zcash_client_sqlite/src/testing is `#[cfg(test)]` (lib.rs:155); test-only unsafe wrapper over the sqlite3 CLI helper. Non-production. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "3a54484f38ccbf19": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/testing/db.rs",
+      "reason": "zcash_client_sqlite/src/testing is `#[cfg(test)]` (lib.rs:155); test fixture (NamedTempFile::new().unwrap()). Non-production. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "cbdd64d54c65cba1": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/testing/db.rs",
+      "reason": "zcash_client_sqlite/src/testing is `#[cfg(test)]` (lib.rs:155); test fixture (WalletDb::for_path(..).unwrap()). Non-production. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "7a97a30268a9674d": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/testing/db.rs",
+      "reason": "zcash_client_sqlite/src/testing is `#[cfg(test)]` (lib.rs:155); test fixture migration unwrap. Non-production. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
+    },
+    "da49e22df2cdc768": {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "path": "zcash_client_sqlite/src/testing/db.rs",
+      "reason": "zcash_client_sqlite/src/testing is `#[cfg(test)]` (lib.rs:155); test fixture migration unwrap. Non-production. Upstream librustzcash code, unchanged by the fork.",
+      "by": "secops triage",
+      "date": "2026-10-23"
     }
   },
   "rule_paths": [
@@ -266,6 +630,15 @@
       "reason": "Upstream librustzcash workflows kept as upstream wrote them except the scoping in each file's \"Ycash (2026-10-06)\" note: ci.yml and audits.yml run only for upstream's `main` (this fork has none), book.yml only on a push to `main`, and mutants.yml's schedule only in zcash/*; their tag-pinned toolchain/mdbook actions (dtolnay/rust-toolchain@stable and the like) are upstream's choice, so their findings are upstream's. The same files and reason as .github/zizmor.yml. ycash-fork.yml, the fork's own CI, has no entry and stays scanned.",
       "by": "semgrep CI setup",
       "date": "2026-10-22"
+    },
+    {
+      "rule": "trailofbits.rs.panic-in-function-returning-result",
+      "paths": [
+        "zcash_client_memory/**"
+      ],
+      "reason": "zcash_client_memory is not shipped in any Ycash binary: it is an unpublished workspace member (version 0.0.0) that no other librustzcash6 crate depends on (only the root Cargo.toml `members` list names it), and none of the Ycash components checked depends on it:  ycash6/Cargo.toml and Cargo.lock (ycashd links only zcash_address/encoding/history/note_encryption/primitives/proofs/protocol/transparent), yew/core/Cargo.toml + yew/Cargo.lock, x402-ycash/light/Cargo.toml + Cargo.lock, hawkeye, yolo, chain-viz, yb-calibration and wyec (grep of every Cargo.toml/Cargo.lock in the workspace: no zcash_client_memory). The flagged unwrap/expect sites (RwLock poisoning, Zatoshis overflow, index conversions, build.rs OUT_DIR, #[cfg(test)] testing/) are upstream librustzcash code left unchanged to keep the fork delta minimal; any Ycash component that adds this crate as a dependency must remove this entry and triage the sites first.",
+      "by": "secops triage",
+      "date": "2026-10-23"
     }
   ]
 }

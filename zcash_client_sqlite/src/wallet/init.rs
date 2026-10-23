@@ -592,7 +592,9 @@ fn init_wallet_db_internal<
             wdb.conn.borrow_mut(),
             Some(MIGRATIONS_TABLE.to_string()),
         );
-        adapter.init().expect("Migrations table setup succeeds.");
+        adapter
+            .init()
+            .map_err(|e| MigratorError::Adapter(WalletMigrationError::from(e)))?;
     }
 
     // Now that we are certain that the migrations table exists, verify that if the database
