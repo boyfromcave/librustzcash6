@@ -1367,6 +1367,15 @@
       "reason": "zcash_client_memory is not shipped in any Ycash binary: it is an unpublished workspace member (version 0.0.0) that no other librustzcash6 crate depends on (only the root Cargo.toml `members` list names it), and none of the Ycash components checked depends on it:  ycash6/Cargo.toml and Cargo.lock (ycashd links only zcash_address/encoding/history/note_encryption/primitives/proofs/protocol/transparent), yew/core/Cargo.toml + yew/Cargo.lock, x402-ycash/light/Cargo.toml + Cargo.lock, hawkeye, yolo, chain-viz, yb-calibration and wyec (grep of every Cargo.toml/Cargo.lock in the workspace: no zcash_client_memory). The flagged unwrap/expect sites (RwLock poisoning, Zatoshis overflow, index conversions, build.rs OUT_DIR, #[cfg(test)] testing/) are upstream librustzcash code left unchanged to keep the fork delta minimal; any Ycash component that adds this crate as a dependency must remove this entry and triage the sites first.",
       "by": "secops triage",
       "date": "2026-10-23"
+    },
+    {
+      "rule": "python.lang.security.audit.dangerous-subprocess-use-audit",
+      "paths": [
+        "contrib/secops/**"
+      ],
+      "reason": "contrib/secops/code-scanning-triage.py calls gh api with argv lists built from constants and the workflow-supplied repository name (no shell); it runs only in the code-scanning workflow with the job's own token.",
+      "by": "secops triage",
+      "date": "2026-10-24"
     }
   ]
 }
