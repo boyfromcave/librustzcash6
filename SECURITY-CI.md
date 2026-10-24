@@ -8,12 +8,13 @@ bucket PRs and Dependabot's grouped security PRs.
 | Leg | Workflow / job | Runs on | Gate | Results |
 |---|---|---|---|---|
 | Semgrep (Community Edition, pinned rule packs + `contrib/semgrep/rules/`) | `semgrep.yml` | PR (diff-aware), push, nightly 02:17 UTC | PR fails on a new **critical** finding | step summary, code scanning (`semgrep`), at most four rolling PRs `semgrep/<bucket>` |
-| CodeQL `security-extended`, Rust + Actions, `build-mode: none` | `codeql.yml` | PR, push to `upgrade/vault`, weekly | none (alerts only) | code scanning (`/language:rust`, `/language:actions`) |
+| CodeQL `security-extended`, Rust + Actions, `build-mode: none` | `codeql.yml` | PR, push to `upgrade/vault`, weekly (Monday 04:29 UTC) | none (alerts only) | code scanning (`/language:rust`, `/language:actions`) |
 | zizmor 1.30.1 (workflow security, default persona) | `zizmor.yml` (upstream's, version pinned) | PR, push | all workflows clean at 1.30.1; `.github/zizmor.yml` lists the upstream-workflow exceptions with reasons | code scanning (`zizmor`) |
 | gitleaks 8.30.1 (secrets) | `secops.yml` `gitleaks` | PR (the PR's commits), push, nightly 03:43 UTC (full history) | fails on a leak | step summary, code scanning (`gitleaks`) |
 | OSV-Scanner 2.6.0 (`Cargo.lock`, `contrib/semgrep/requirements.txt`) | `secops.yml` `osv-scanner` | PR, push, nightly | fails on a known vulnerability not in `osv-scanner.toml` | step summary, code scanning (`osv-scanner`) |
 | cargo-deny 0.20.2 `check advisories bans sources --locked` | `secops.yml` `cargo-deny` | PR, push, nightly | fails on an advisory not ignored in `deny.toml`, a banned crate or an unknown source | step summary, code scanning (`cargo-deny`) |
 | cargo vet (supply-chain review) | `audits.yml` (upstream's) | upstream's `main` only | upstream's store | upstream |
+| Code-scanning triage | `code-scanning.yml` | push changing `contrib/secops/code-scanning-dismissals.json`, nightly 03:53 UTC, by hand | never | dismisses the listed alerts of every tool above; open alerts in the step summary and the `code-scanning-alerts` artifact |
 | Dependabot (security updates only) | `.github/dependabot.yml` | GitHub | one grouped `security` PR per ecosystem (cargo, github-actions, pip); version updates off | PRs |
 
 Tools are installed at exact releases and checked against the sha256 recorded in the workflow;
@@ -43,7 +44,9 @@ Every acceptance carries a reason a reviewer can check.
 - **gitleaks**: a fingerprint line in `.gitleaksignore` with a `#` reason above it, only for test
   vectors and public constants. A real secret is rotated, never ignored.
 - **zizmor**: a rule/file entry in `.github/zizmor.yml` with the reason in its header comment.
-- **CodeQL**: dismiss the alert in code scanning with a reason.
+- **CodeQL** (and any other code-scanning alert): an entry in `contrib/secops/code-scanning-dismissals.json`
+  (tool + rule + path glob, a reason of "false positive" / "won't fix" / "used in tests", and a comment),
+  applied by `code-scanning.yml`; not by hand in the web UI.
 
 ## Repository settings
 
