@@ -92,6 +92,11 @@ ignoreUntil = 2027-01-21
 reason = "tokio 1.38.2 AsyncFd safe constructors violate I/O safety (fixed by deprecation in 1.51.6/1.53.3): pulled in by zcash_client_backend (`lightwalletd-tonic`, `tor`: tonic, hyper, arti/tor-rtcompat) and zcash_client_memory; nothing in the fork or those dependencies constructs an AsyncFd; `cargo update -p tokio --precise 1.53.3` does not resolve (it needs socket2 >=0.6.3, held at 0.6.1 by tonic 0.14.2); not in the six crates"
 
 [[IgnoredVulns]]
+id = "RUSTSEC-2026-0387"
+ignoreUntil = 2027-01-22
+reason = "crypto-bigint 0.5.5 timing variability in constant-time ops (fixed in 0.7.6): a lockfile entry for ssh-key 0.6.6's optional `p256`/`p384`/`p521` features (elliptic-curve 0.13.8), which nothing enables (ssh-key arrives through arti-client 0.35 tor-keymgr/tor-key-forge under zcash_client_backend `tor`, with `alloc`/`rsa` only); not compiled, so cargo-deny does not see it; 0.7.6 needs elliptic-curve 0.14 (ssh-key 0.7 is still a release candidate) and Rust 1.87 (toolchain 1.85.1); not in the six crates"
+
+[[IgnoredVulns]]
 id = "GHSA-7gcf-g7xr-8hxj"
 ignoreUntil = 2027-01-20
 reason = "serde_with 3.16 (pczt, eip681, wallet crates): 3.21 needs a newer time/time-core than upstream's =0.1.2 pin allows; not in the six crates"
