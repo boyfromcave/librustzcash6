@@ -74,6 +74,7 @@ license-files = [
 [advisories]
 version = 2
 ignore = [
+    { id = "RUSTSEC-2026-0403", reason = "zstd-safe 7.1.0 decompress_stream (zstd 0.13.1 <- async-compression <- tor-dirclient, arti-client 0.35 under zcash_client_backend `tor`): the fix is 8.2.0, out of zstd 0.13's reach until arti/async-compression move; only Tor directory documents are decompressed there; not in the six crates" },
     { id = "RUSTSEC-2025-0056", reason = "adler 1.0.2 unmaintained (no vulnerability): miniz_oxide 0.7 <- backtrace/flate2 in the wallet crates (zcash_client_*); not in the six crates" },
     { id = "RUSTSEC-2024-0436", reason = "paste unmaintained (no vulnerability): arti/tor (zcash_client_backend `tor`); not in the six crates" },
     { id = "RUSTSEC-2026-0173", reason = "proc-macro-error2 unmaintained (no vulnerability): a proc-macro dependency of getset (orchard, pczt); compile-time only, no code in the built crates" },
