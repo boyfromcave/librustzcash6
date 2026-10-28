@@ -267,8 +267,11 @@ impl TxVersion {
                 ZFuture => false, // ZIP 2003
             },
             TxVersion::V5 => match consensus_branch_id {
-                Sprout | Overwinter | Sapling | Ycash | Blossom | Heartwood | Canopy => false,
-                Nu5 | Nu6 | Nu6_1 | Nu6_2 | Vault => true,
+                // Vault: transactions stay v4 (ycashd rejects v5 under Vault, quantum spec R-A3).
+                Sprout | Overwinter | Sapling | Ycash | Blossom | Heartwood | Canopy | Vault => {
+                    false
+                }
+                Nu5 | Nu6 | Nu6_1 | Nu6_2 => true,
                 #[cfg(zcash_unstable = "nu7")]
                 Nu7 => true,
                 #[cfg(zcash_unstable = "zfuture")]

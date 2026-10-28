@@ -707,7 +707,9 @@ impl<C: Borrow<rusqlite::Connection>, P: consensus::Parameters, CL, R> WalletRea
 
         for account_id in self.get_account_ids()? {
             has_accounts = true;
-            let account = self.get_account(account_id)?.expect("account ID exists");
+            let account = self
+                .get_account(account_id)?
+                .ok_or(SqliteClientError::AccountUnknown)?;
 
             // If the account is imported, the seed _might_ be relevant, but the only
             // way we could determine that is by brute-forcing the ZIP 32 account

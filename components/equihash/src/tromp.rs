@@ -8,6 +8,9 @@ use blake2b_simd::State;
 
 use crate::{blake2b, minimal::minimal_from_indices, params::Params, verify};
 
+/// The capacity of the C solver's solution buffer (`MAXSOLS` in `tromp/equi_miner.c`).
+const MAXSOLS: usize = 8;
+
 #[repr(C)]
 struct CEqui {
     _f: [u8; 0],
@@ -69,14 +72,16 @@ unsafe fn worker(eq: *mut CEqui, p: Params, curr_state: &State) -> Vec<Vec<u32>>
     unsafe { equi_digitK(eq, 0) };
 
     {
-        let nsols = unsafe { equi_nsols(eq) };
+        // The C solver keeps counting solutions past `MAXSOLS` but stores only the first
+        // `MAXSOLS` of them (`equi_miner.c`, `candidate`), so clamp before building the slice.
+        let nsols = unsafe { equi_nsols(eq) }.min(MAXSOLS);
         let sols = unsafe { equi_sols(eq) };
         let solution_len = 1 << p.k;
         //println!("{nsols} solutions of length {solution_len} at {sols:?}");
 
         // SAFETY:
         // - caller must supply a `p` instance that matches the hard-coded values in the C code.
-        // - `sols` is a single allocation containing at least `nsols` solutions.
+        // - `sols` is a single allocation of `MAXSOLS` solutions, and `nsols <= MAXSOLS`.
         // - this slice is a shared ref to the memory in a valid `eq` instance supplied by the caller.
         let solutions: &[u32] = unsafe { slice::from_raw_parts(sols, nsols * solution_len) };
 

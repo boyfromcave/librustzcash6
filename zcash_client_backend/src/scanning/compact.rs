@@ -240,17 +240,31 @@ where
 
     for tx in block.vtx.into_iter() {
         let txid = tx.txid();
-        let tx_index =
-            TxIndex::try_from(tx.index).expect("Cannot fit more than 2^16 transactions in a block");
+        // The compact block comes from a lightwalletd server, so a transaction index that does
+        // not fit in 16 bits, or a malformed nullifier, is an encoding error, not a panic.
+        let tx_index = TxIndex::try_from(tx.index).map_err(|_| ScanError::TxIndexInvalid {
+            at_height: cur_height,
+            txid,
+            index: tx.index,
+        })?;
 
+        let sapling_spend_nfs = tx
+            .spends
+            .iter()
+            .enumerate()
+            .map(|(i, spend)| {
+                spend.nf().map_err(|_| ScanError::EncodingInvalid {
+                    at_height: cur_height,
+                    txid,
+                    pool_type: ShieldedProtocol::Sapling,
+                    index: i,
+                })
+            })
+            .collect::<Result<Vec<_>, _>>()?;
         let (sapling_spends, sapling_unlinked_nullifiers) = find_spent(
-            &tx.spends,
+            &sapling_spend_nfs,
             &nullifiers.sapling,
-            |spend| {
-                spend.nf().expect(
-                    "Could not deserialize nullifier for spend from protobuf representation.",
-                )
-            },
+            |nf| *nf,
             WalletSpend::from_parts,
         );
 
@@ -258,14 +272,23 @@ where
 
         #[cfg(feature = "orchard")]
         let orchard_spends = {
+            let orchard_spend_nfs = tx
+                .actions
+                .iter()
+                .enumerate()
+                .map(|(i, action)| {
+                    action.nf().map_err(|_| ScanError::EncodingInvalid {
+                        at_height: cur_height,
+                        txid,
+                        pool_type: ShieldedProtocol::Orchard,
+                        index: i,
+                    })
+                })
+                .collect::<Result<Vec<_>, _>>()?;
             let (orchard_spends, orchard_unlinked_nullifiers) = find_spent(
-                &tx.actions,
+                &orchard_spend_nfs,
                 &nullifiers.orchard,
-                |spend| {
-                    spend.nf().expect(
-                        "Could not deserialize nullifier for spend from protobuf representation.",
-                    )
-                },
+                |nf| *nf,
                 WalletSpend::from_parts,
             );
             orchard_nullifier_map.push((tx_index, txid, orchard_unlinked_nullifiers));
@@ -593,7 +616,7 @@ mod tests {
     use super::{BatchRunners, scan_block_with_runners};
     use crate::{
         data_api::BlockMetadata,
-        scanning::{Nullifiers, ScanningKeys, scan_block, testing::fake_compact_block},
+        scanning::{Nullifiers, ScanError, ScanningKeys, scan_block, testing::fake_compact_block},
     };
 
     #[test]
@@ -811,5 +834,41 @@ mod tests {
                 }
             ]
         );
+    }
+
+    #[test]
+    fn scan_block_rejects_malformed_compact_tx() {
+        let network = Network::TestNetwork;
+        let account = AccountId::ZERO;
+        let usk = UnifiedSpendingKey::from_seed(&network, &[0u8; 32], account).expect("Valid USK");
+        let ufvk = usk.to_unified_full_viewing_key();
+        let scanning_keys = ScanningKeys::<AccountId, Infallible>::empty();
+        let block = || {
+            fake_compact_block(
+                1u32.into(),
+                BlockHash([0; 32]),
+                Nullifier([7; 32]),
+                ufvk.sapling().unwrap(),
+                Zatoshis::const_from_u64(5),
+                false,
+                Some((0, 0)),
+            )
+        };
+
+        // A spend nullifier of the wrong length is an encoding error, not a panic.
+        let mut cb = block();
+        cb.vtx[1].spends[0].nf.truncate(31);
+        assert!(matches!(
+            scan_block(&network, cb, &scanning_keys, &Nullifiers::empty(), None),
+            Err(ScanError::EncodingInvalid { index: 0, .. })
+        ));
+
+        // So is a transaction index that does not fit in 16 bits.
+        let mut cb = block();
+        cb.vtx[1].index = 1 << 16;
+        assert!(matches!(
+            scan_block(&network, cb, &scanning_keys, &Nullifiers::empty(), None),
+            Err(ScanError::TxIndexInvalid { index: 65536, .. })
+        ));
     }
 }

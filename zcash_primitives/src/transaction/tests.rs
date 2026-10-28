@@ -40,6 +40,20 @@ fn tx_read_write() {
     assert_eq!(&data[..], &encoded[..]);
 }
 
+#[test]
+fn vault_transactions_stay_v4() {
+    // Quantum spec R-A3: under Ycash's Vault branch transactions are v4 (ycashd rejects v5).
+    use crate::transaction::TxVersion;
+    assert!(TxVersion::V4.valid_in_branch(BranchId::Vault));
+    assert!(!TxVersion::V5.valid_in_branch(BranchId::Vault));
+    assert_eq!(
+        TxVersion::suggested_for_branch(BranchId::Vault),
+        TxVersion::V4
+    );
+    // NU5's answers are unchanged.
+    assert!(TxVersion::V5.valid_in_branch(BranchId::Nu5));
+}
+
 #[cfg(test)]
 fn check_roundtrip(tx: Transaction) -> Result<(), TestCaseError> {
     let mut txn_bytes = vec![];

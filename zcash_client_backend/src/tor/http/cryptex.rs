@@ -209,10 +209,15 @@ impl Client {
         // we have either at least three rates, or fewer than three sources.
         if exchanges.others.len() >= 2 && rates.len() + usize::from(trusted_res.is_ok()) < 3 {
             error!("Too many exchange requests failed");
-            return Err(errors
-                .into_iter()
-                .next()
-                .expect("At least one request failed"));
+            // If the trusted exchange failed, `errors` can be empty (every other one answered), so
+            // report its error; if it succeeded, at most one of the >= 2 others did.
+            return Err(match trusted_res {
+                Err(e) => e,
+                Ok(_) => errors
+                    .into_iter()
+                    .next()
+                    .expect("at least one other request failed"),
+            });
         }
         let evict_random = |s: &mut Vec<Decimal>| {
             if let Some(index) = (0..s.len()).choose(&mut thread_rng()) {

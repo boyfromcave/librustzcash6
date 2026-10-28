@@ -1,0 +1,117 @@
+# Copyright (c) 2026 The Ycash developers
+# Distributed under the MIT software license, see the accompanying
+# file COPYING or https://www.opensource.org/licenses/mit-license.php .
+#
+# Ycash-specific Semgrep rules for this fork of librustzcash, scanned beside the pinned semgrep-rules
+# packs (contrib/semgrep/README.md). metadata.bucket pins a rule's bucket; without it the bucket
+# follows severity/impact/confidence.
+rules:
+  - id: ycash.consensus.zcash-only-branch-id
+    languages: [rust]
+    # Matches integer literals in code, never comments: Ycash replaced exactly these four Zcash
+    # mainnet consensus branch IDs with its own (components/zcash_protocol/src/consensus.rs,
+    # BranchId::try_from: Blossom 0x8e471bd6, Heartwood 0x66314da3, Canopy 0x19bd2d2f,
+    # NU5 0xf919a198). Overwinter, Sapling, NU6 and NU6.1 are shared with Zcash and not flagged.
+    patterns:
+      - pattern: $N
+      - metavariable-regex:
+          metavariable: $N
+          regex: (?i)^0x(2bb4_?0e60|f5b9_?230b|e9ff_?75a6|c2d6_?d0b4)(u32)?$
+    message: >-
+      A Zcash-mainnet consensus branch ID ($N: Zcash's Blossom, Heartwood, Canopy or NU5) that Ycash
+      does not use. ZIP-143/243/244 signature hashes commit to the branch ID, so a transaction built or
+      checked with it signs for Zcash's chain, not Ycash's, and ycashd rejects it. Use BranchId (and
+      BranchId::for_height) from zcash_protocol::consensus, which carries Ycash's IDs (0x374d694f
+      Ycash, 0x8e471bd6 Blossom, ..., 0x6d5b7a31 Vault).
+    severity: ERROR
+    metadata:
+      category: security
+      bucket: critical
+      cwe: ["CWE-670: Always-Incorrect Control Flow Implementation"]
+      references: ["components/zcash_protocol/src/consensus.rs (BranchId::try_from)",
+                   "https://zips.z.cash/zip-0200"]
+
+  - id: ycash.consensus.branch-id-literal-outside-definition
+    languages: [rust]
+    # Ycash's own consensus branch IDs (0x374d694f Ycash, 0x6d5b7a31 Vault) have exactly one
+    # definition: components/zcash_protocol/src/consensus.rs, BranchId::try_from and
+    # From<BranchId> for u32. Anywhere else a literal is a second definition that a future
+    # change to the branch ID (as the Vault upgrade made, on both node lines and here together)
+    # would miss. Tests that pin the value against the definition are excluded by path.
+    paths:
+      exclude:
+        - "/components/zcash_protocol/src/consensus.rs"
+        - "**/tests/**"
+        - "*tests.rs"
+        - "*test_vectors*"
+    # A regex, not `pattern: $N` (which visits every expression and times out on the large
+    # files); line and doc comments are excluded so prose may name the IDs.
+    patterns:
+      - pattern-regex: (?i)\b0x(6d5b_?7a31|374d_?694f)(_?u32)?\b
+      - pattern-not-regex: (?i)//[^\n]*0x(6d5b_?7a31|374d_?694f)
+      - pattern-not-inside: assert_eq!(...)
+      - pattern-not-inside: assert_ne!(...)
+    message: >-
+      A Ycash consensus branch ID literal outside its one definition in
+      zcash_protocol::consensus. ZIP-143/243 signature hashes commit to the branch ID, so a second
+      copy that drifts from the definition makes this code sign or verify for a different chain.
+      Use BranchId::Ycash / BranchId::Vault (u32::from, BranchId::try_from, BranchId::for_height).
+    severity: WARNING
+    metadata:
+      category: security
+      bucket: high
+      cwe: ["CWE-1109: Use of Same Variable for Multiple Purposes"]
+      references: ["components/zcash_protocol/src/consensus.rs (BranchId)",
+                   "https://zips.z.cash/zip-0200"]
+
+  - id: ycash.parse.panic-in-transaction-reader
+    languages: [rust]
+    # The transaction, block and transparent readers parse bytes from the network and from
+    # ycashd's RPCs (untrusted). They must return io::Error on malformed input, never panic: a
+    # panic is a remote crash of whatever links them (a wallet, lightwalletd's client, the bridge
+    # attestor). Matches a panicking call in a fn named read*/parse* returning a Result in the
+    # parser crates. An unwrap in the else-arm of an explicit `is_none()` check is not flagged;
+    # other guarded cases are accepted by fingerprint in accepted.json with the guard named.
+    paths:
+      include:
+        - "/zcash_primitives/src/transaction/**"
+        - "/zcash_primitives/src/block.rs"
+        - "/zcash_primitives/src/merkle_tree.rs"
+        - "/zcash_transparent/src/**"
+        - "/components/zcash_encoding/src/**"
+        - "/components/zcash_protocol/src/**"
+        - "/zcash_history/src/**"
+      exclude:
+        - "**/tests/**"
+        - "*tests.rs"
+        - "*test_vectors*"
+        - "*testing.rs"
+    patterns:
+      - pattern-inside: |
+          fn $F(...) -> $RET { ... }
+      - metavariable-regex:
+          metavariable: $F
+          regex: ^(read|parse)
+      - metavariable-regex:
+          metavariable: $RET
+          regex: Result
+      - pattern-either:
+          - pattern: $X.unwrap()
+          - pattern: $X.expect(...)
+          - pattern: panic!(...)
+          - pattern: unreachable!(...)
+          - pattern: unimplemented!(...)
+          - pattern: todo!(...)
+      - pattern-not-inside: |
+          if $C.is_none().into() { ... } else { ... }
+    message: >-
+      A panicking call while parsing untrusted bytes. Readers of transactions, blocks and
+      transparent data must reject malformed input with an io::Error (InvalidData/InvalidInput),
+      never panic: return an error with `?` / `ok_or_else`, or if the value is provably present,
+      restructure so the proof is in the types (and accept this finding with the reason).
+    severity: WARNING
+    metadata:
+      category: security
+      bucket: high
+      cwe: ["CWE-248: Uncaught Exception"]
+      references: ["zcash_primitives/src/transaction/mod.rs (Transaction::read)"]

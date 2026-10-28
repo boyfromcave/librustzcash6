@@ -63,3 +63,29 @@ expression = "LicenseRef-ring"
 license-files = [
     { path = "LICENSE", hash = 0xbd0eed23 },
 ]
+
+# Ycash (2026-10-23): advisories, for the fork's secops CI (.github/workflows/secops.yml,
+# SECURITY-CI.md; upstream's audits.yml checks licenses only). Every ignore names the advisory, the
+# path that pulls the crate in, and why it does not reach the six crates ycashd 6.20.0 takes from
+# this repository (zcash_protocol, zcash_primitives, zcash_transparent, zcash_address,
+# zcash_encoding, f4jumble). The same advisories are listed in osv-scanner.toml with an expiry
+# (at most 90 days), which is when these are re-checked. Patch-level fixes are taken in Cargo.lock
+# instead of being listed here.
+[advisories]
+version = 2
+ignore = [
+    { id = "RUSTSEC-2026-0403", reason = "zstd-safe 7.1.0 decompress_stream (zstd 0.13.1 <- async-compression <- tor-dirclient, arti-client 0.35 under zcash_client_backend `tor`): the fix is 8.2.0, out of zstd 0.13's reach until arti/async-compression move; only Tor directory documents are decompressed there; not in the six crates" },
+    { id = "RUSTSEC-2025-0056", reason = "adler 1.0.2 unmaintained (no vulnerability): miniz_oxide 0.7 <- backtrace/flate2 in the wallet crates (zcash_client_*); not in the six crates" },
+    { id = "RUSTSEC-2024-0436", reason = "paste unmaintained (no vulnerability): arti/tor (zcash_client_backend `tor`); not in the six crates" },
+    { id = "RUSTSEC-2026-0173", reason = "proc-macro-error2 unmaintained (no vulnerability): a proc-macro dependency of getset (orchard, pczt); compile-time only, no code in the built crates" },
+    { id = "RUSTSEC-2023-0071", reason = "rsa Marvin timing attack, no fixed release: ssh-key <- tor-keymgr (zcash_client_backend `tor`); no RSA decryption in any path the fork uses; not in the six crates" },
+    { id = "RUSTSEC-2026-0346", reason = "rustls 0.21: minreq 2.12 in zcash_proofs `download-params` only (Sapling parameter download, checked by hash after fetch); fix needs a minreq major bump upstream; not in the six crates" },
+    { id = "RUSTSEC-2026-0349", reason = "rustls 0.21: as RUSTSEC-2026-0346 (minreq in zcash_proofs `download-params`)" },
+    { id = "RUSTSEC-2026-0098", reason = "rustls-webpki 0.101: as RUSTSEC-2026-0346 (minreq in zcash_proofs `download-params`)" },
+    { id = "RUSTSEC-2026-0099", reason = "rustls-webpki 0.101: as RUSTSEC-2026-0346 (minreq in zcash_proofs `download-params`)" },
+    { id = "RUSTSEC-2026-0104", reason = "rustls-webpki 0.101: as RUSTSEC-2026-0346 (minreq in zcash_proofs `download-params`)" },
+    { id = "RUSTSEC-2026-0382", reason = "rustls-webpki 0.101: as RUSTSEC-2026-0346 (minreq in zcash_proofs `download-params`); 0.103 is bumped to the fix" },
+    { id = "RUSTSEC-2026-0381", reason = "webpki-roots 0.25: as RUSTSEC-2026-0346 (minreq in zcash_proofs `download-params`); 1.0 is bumped to the fix" },
+    { id = "RUSTSEC-2026-0009", reason = "time 0.3.36 stack-exhaustion DoS in its parser: upstream pins time-core =0.1.2 (Cargo.toml, MSRV), which blocks 0.3.47; used by the wallet crates (zcash_client_*) on their own data; not in the six crates" },
+    { id = "RUSTSEC-2026-0386", reason = "tokio 1.38.2 AsyncFd safe constructors violate I/O safety (fixed by deprecation in 1.51.6/1.53.3): pulled in by zcash_client_backend (`lightwalletd-tonic`, `tor`: tonic, hyper, arti/tor-rtcompat) and zcash_client_memory; nothing in the fork or those dependencies constructs an AsyncFd; `cargo update -p tokio --precise 1.53.3` does not resolve (it needs socket2 >=0.6.3, held at 0.6.1 by tonic 0.14.2); not in the six crates" },
+]
