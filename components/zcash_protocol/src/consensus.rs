@@ -757,6 +757,18 @@ pub enum BranchId {
     Nu6_2,
     /// The consensus rules deployed by [`NetworkUpgrade::Vault`].
     Vault,
+    /// testnet-yb-slow's shadow-fork upgrade: Canopy's rules under the network's own branch ID.
+    ///
+    /// The Ycash testnets testnet-yb-slow and testnet-legacy copy Ycash mainnet's history up to
+    /// a split height and continue from there under branch IDs mainnet never uses, so a
+    /// signature made on them is invalid on mainnet and the reverse. Only the ID differs; see
+    /// [`BranchId::rules`]. There is no [`NetworkUpgrade`] for it: ycashd computes the epoch.
+    SlowShadow,
+    /// testnet-legacy's shadow-fork upgrade: Canopy's rules under the network's own branch ID.
+    LegacyShadow,
+    /// testnet-yb-slow's Vault upgrade: [`BranchId::Vault`]'s rules under the network's own
+    /// branch ID, never mainnet's `0x6d5b7a31`.
+    SlowVault,
     /// The consensus rules to be deployed by [`NetworkUpgrade::Nu7`].
     #[cfg(zcash_unstable = "nu7")]
     Nu7,
@@ -788,6 +800,11 @@ impl TryFrom<u32> for BranchId {
             0x4dec_4df0 => Ok(BranchId::Nu6_1),
             0x5437_f330 => Ok(BranchId::Nu6_2),
             0x6d5b_7a31 => Ok(BranchId::Vault),
+            // The Ycash shadow-fork testnets' own IDs (ycashd chainparams.cpp, testnet-yb-slow
+            // and testnet-legacy); they collide with no Zcash or Ycash branch ID.
+            0x57a2_4d5d => Ok(BranchId::SlowShadow),
+            0x3570_6728 => Ok(BranchId::LegacyShadow),
+            0xe1f1_cc08 => Ok(BranchId::SlowVault),
             #[cfg(zcash_unstable = "nu7")]
             0xffff_ffff => Ok(BranchId::Nu7),
             #[cfg(zcash_unstable = "zfuture")]
@@ -812,6 +829,9 @@ impl From<BranchId> for u32 {
             BranchId::Nu6_1 => 0x4dec_4df0,
             BranchId::Nu6_2 => 0x5437_f330,
             BranchId::Vault => 0x6d5b_7a31,
+            BranchId::SlowShadow => 0x57a2_4d5d,
+            BranchId::LegacyShadow => 0x3570_6728,
+            BranchId::SlowVault => 0xe1f1_cc08,
             #[cfg(zcash_unstable = "nu7")]
             BranchId::Nu7 => 0xffff_ffff,
             #[cfg(zcash_unstable = "zfuture")]
@@ -821,6 +841,21 @@ impl From<BranchId> for u32 {
 }
 
 impl BranchId {
+    /// Returns the branch whose consensus rules this branch ID stands for.
+    ///
+    /// This is `self` for every branch except the Ycash shadow-fork testnets' own IDs, which
+    /// carry the rules of another branch under a different ID: [`BranchId::SlowShadow`] and
+    /// [`BranchId::LegacyShadow`] stand for [`BranchId::Canopy`] (the epoch before the split on
+    /// Ycash mainnet), [`BranchId::SlowVault`] for [`BranchId::Vault`]. Signatures commit to the
+    /// ID itself (`u32::from(self)`), never to `rules()`.
+    pub fn rules(&self) -> BranchId {
+        match self {
+            BranchId::SlowShadow | BranchId::LegacyShadow => BranchId::Canopy,
+            BranchId::SlowVault => BranchId::Vault,
+            other => *other,
+        }
+    }
+
     /// Returns the branch ID corresponding to the consensus rule set that is active at
     /// the given height.
     ///
@@ -905,6 +940,9 @@ impl BranchId {
                     let upper = None;
                     (lower, upper)
                 }),
+            // A shadow-fork testnet's epochs are computed by ycashd from its own chain
+            // parameters; no `Parameters` here knows them.
+            BranchId::SlowShadow | BranchId::LegacyShadow | BranchId::SlowVault => None,
             #[cfg(zcash_unstable = "nu7")]
             BranchId::Nu7 => params
                 .activation_height(NetworkUpgrade::Nu7)
@@ -925,7 +963,7 @@ impl BranchId {
         use BranchId::*;
         match self {
             Sprout | Overwinter | Sapling | Ycash | Blossom | Heartwood | Canopy | Nu5 | Nu6
-            | Nu6_1 | Nu6_2 | Vault => true,
+            | Nu6_1 | Nu6_2 | Vault | SlowShadow | LegacyShadow | SlowVault => true,
             #[cfg(zcash_unstable = "nu7")]
             BranchId::Nu7 => false,
             #[cfg(zcash_unstable = "zfuture")]
@@ -938,9 +976,8 @@ impl BranchId {
         use BranchId::*;
         match self {
             Sprout | Overwinter => false,
-            Sapling | Ycash | Blossom | Heartwood | Canopy | Nu5 | Nu6 | Nu6_1 | Nu6_2 | Vault => {
-                true
-            }
+            Sapling | Ycash | Blossom | Heartwood | Canopy | Nu5 | Nu6 | Nu6_1 | Nu6_2 | Vault
+            | SlowShadow | LegacyShadow | SlowVault => true,
             #[cfg(zcash_unstable = "nu7")]
             BranchId::Nu7 => true,
             #[cfg(zcash_unstable = "zfuture")]
@@ -955,7 +992,8 @@ impl BranchId {
             // Vault is a v4/Sapling-era upgrade on Ycash: no Orchard, no v5
             // (ycashd ContextualCheckTransaction rejects a non-Sapling version
             // group under Vault, quantum spec rule R-A3).
-            Sprout | Overwinter | Sapling | Ycash | Blossom | Heartwood | Canopy | Vault => false,
+            Sprout | Overwinter | Sapling | Ycash | Blossom | Heartwood | Canopy | Vault
+            | SlowShadow | LegacyShadow | SlowVault => false,
             Nu5 | Nu6 | Nu6_1 | Nu6_2 => true,
             #[cfg(zcash_unstable = "nu7")]
             BranchId::Nu7 => true,
@@ -986,6 +1024,9 @@ pub mod testing {
             BranchId::Nu6_1,
             BranchId::Nu6_2,
             BranchId::Vault,
+            BranchId::SlowShadow,
+            BranchId::LegacyShadow,
+            BranchId::SlowVault,
             #[cfg(zcash_unstable = "nu7")]
             BranchId::Nu7,
             #[cfg(zcash_unstable = "zfuture")]
@@ -1053,6 +1094,71 @@ mod tests {
         assert!(BranchId::try_from(1).is_err());
         assert_eq!(BranchId::try_from(0x6d5b_7a31), Ok(BranchId::Vault));
         assert_eq!(u32::from(BranchId::Vault), 0x6d5b_7a31);
+    }
+
+    #[test]
+    fn shadow_fork_branch_ids() {
+        // The Ycash shadow-fork testnets' IDs round-trip, are distinct from each other and from
+        // every other branch ID, and carry the rules of the branch they stand for.
+        let shadow = [
+            (BranchId::SlowShadow, 0x57a2_4d5d, BranchId::Canopy),
+            (BranchId::LegacyShadow, 0x3570_6728, BranchId::Canopy),
+            (BranchId::SlowVault, 0xe1f1_cc08, BranchId::Vault),
+        ];
+        let others = [
+            BranchId::Sprout,
+            BranchId::Overwinter,
+            BranchId::Sapling,
+            BranchId::Ycash,
+            BranchId::Blossom,
+            BranchId::Heartwood,
+            BranchId::Canopy,
+            BranchId::Nu5,
+            BranchId::Nu6,
+            BranchId::Nu6_1,
+            BranchId::Nu6_2,
+            BranchId::Vault,
+        ];
+        for (b, id, rules) in shadow {
+            assert_eq!(BranchId::try_from(id), Ok(b));
+            assert_eq!(u32::from(b), id);
+            assert_eq!(b.rules(), rules);
+            assert_ne!(b, rules);
+            assert_eq!(b.has_sprout(), rules.has_sprout());
+            assert_eq!(b.has_sapling(), rules.has_sapling());
+            assert_eq!(b.has_orchard(), rules.has_orchard());
+            assert_eq!(
+                b.sprout_uses_groth_proofs(),
+                rules.sprout_uses_groth_proofs()
+            );
+            assert!(b.height_bounds(&MAIN_NETWORK).is_none());
+            for o in others {
+                assert_ne!(u32::from(o), id);
+                assert_eq!(o.rules(), o);
+            }
+            // Zcash's own IDs for the upgrades Ycash renumbered, the proposed NU7, and ZFUTURE.
+            for z in [
+                0x2bb4_0e60u32,
+                0xf5b9_230b,
+                0xe9ff_75a6,
+                0xc2d6_d0b4,
+                0x7719_0ad8,
+                0xffff_ffff,
+                0x7473_6554,
+            ] {
+                assert_ne!(z, id);
+            }
+        }
+        assert_ne!(u32::from(BranchId::SlowVault), u32::from(BranchId::Vault));
+        assert_ne!(
+            u32::from(BranchId::SlowShadow),
+            u32::from(BranchId::LegacyShadow)
+        );
+        // Mainnet never reaches them: its branch at every height stays its own.
+        for h in [0u32, 570_000, 1_100_006, 5_000_000] {
+            let b = BranchId::for_height(&MAIN_NETWORK, BlockHeight(h));
+            assert_eq!(b.rules(), b);
+        }
     }
 
     #[test]
