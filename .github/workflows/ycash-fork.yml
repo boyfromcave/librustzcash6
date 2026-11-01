@@ -222,9 +222,17 @@ jobs:
         with:
           shared-key: ycash-fork-test
           save-if: 'false'
-      - uses: taiki-e/install-action@74e87cbfa15a59692b158178d8905a61bf6fca95 # v2.75.20
-        with:
-          tool: cargo-mutants
+      # Built from source on this runner, at a pinned version, from crates.io with its own
+      # Cargo.lock (--locked: every dependency checked against the registry checksums). install-action
+      # has no manifest for cargo-mutants and fell back to cargo-binstall, which took the newest
+      # prebuilt release (unpinned), linked against glibc 2.39, so it would not start on
+      # ubuntu-22.04 (glibc 2.35): "GLIBC_2.39 not found" (run 41300643960). About two minutes.
+      - name: Install cargo-mutants (pinned, built here)
+        env:
+          CARGO_MUTANTS_VERSION: 27.1.0
+        run: |
+          cargo install --locked "cargo-mutants@${CARGO_MUTANTS_VERSION}"
+          cargo mutants --version
       - name: Mutate the fork's delta
         run: |
           git fetch --no-tags origin +refs/heads/librustzcash6-legacy:refs/remotes/origin/librustzcash6-legacy
