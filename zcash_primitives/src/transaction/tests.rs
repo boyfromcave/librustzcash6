@@ -54,6 +54,65 @@ fn vault_transactions_stay_v4() {
     assert!(TxVersion::V5.valid_in_branch(BranchId::Nu5));
 }
 
+#[test]
+fn shadow_fork_branch_ids_sign_apart() {
+    // The Ycash shadow-fork testnets (testnet-yb-slow, testnet-legacy) sign v4 transactions under
+    // their own branch IDs, with the rules of the branch each stands for. The same transaction and
+    // input hash differently under each ID (ZIP 243 personalises with the branch ID), so a
+    // signature made under one is invalid under every other: no replay onto Ycash mainnet.
+    use crate::transaction::TxVersion;
+    for (b, rules) in [
+        (BranchId::SlowShadow, BranchId::Canopy),
+        (BranchId::LegacyShadow, BranchId::Canopy),
+        (BranchId::SlowVault, BranchId::Vault),
+    ] {
+        assert_eq!(b.rules(), rules);
+        assert_eq!(TxVersion::suggested_for_branch(b), TxVersion::V4);
+        assert!(TxVersion::V4.valid_in_branch(b));
+        assert!(!TxVersion::V5.valid_in_branch(b));
+    }
+    for tv in self::data::zip_0243::make_test_vectors() {
+        let signable_input = |tx: &Transaction| match tv.transparent_input {
+            Some(n) => SignableInput::Transparent(
+                ::transparent::sighash::SignableInput::from_parts(
+                    tx.transparent_bundle().unwrap(),
+                    SighashType::parse(tv.hash_type as u8).unwrap(),
+                    n as usize,
+                    &tv.script_code,
+                    &tv.script_code,
+                    Zatoshis::from_nonnegative_i64(tv.amount).unwrap(),
+                )
+                .unwrap(),
+            ),
+            _ => SignableInput::Shielded,
+        };
+        let mut hashes = vec![];
+        for b in [
+            BranchId::Canopy,
+            BranchId::Vault,
+            BranchId::SlowShadow,
+            BranchId::LegacyShadow,
+            BranchId::SlowVault,
+        ] {
+            let tx = Transaction::read(&tv.tx[..], b).unwrap();
+            assert_eq!(tx.consensus_branch_id(), b);
+            let mut encoded = vec![];
+            tx.write(&mut encoded).unwrap();
+            assert_eq!(&encoded[..], &tv.tx[..]);
+            hashes.push(
+                v4_signature_hash(tx.deref(), &signable_input(&tx))
+                    .as_ref()
+                    .to_vec(),
+            );
+        }
+        for i in 0..hashes.len() {
+            for j in (i + 1)..hashes.len() {
+                assert_ne!(hashes[i], hashes[j]);
+            }
+        }
+    }
+}
+
 #[cfg(test)]
 fn check_roundtrip(tx: Transaction) -> Result<(), TestCaseError> {
     let mut txn_bytes = vec![];
