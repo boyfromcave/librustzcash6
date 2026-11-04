@@ -1,0 +1,2 @@
+# equivalent outside zcash_unstable=nu7; the nu7 assert covers it
+exclude_re = ["BranchId::has_sprout -> bool with true"]
