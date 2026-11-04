@@ -1108,4 +1108,68 @@ mod tests {
             BranchId::Canopy,
         );
     }
+
+    // Kills: TestNetwork::activation_height -> None.
+    #[test]
+    fn testnet_activation_heights() {
+        use super::TEST_NETWORK;
+        assert_eq!(
+            TEST_NETWORK.activation_height(NetworkUpgrade::Sapling),
+            Some(BlockHeight(280_000))
+        );
+        assert_eq!(
+            TEST_NETWORK.activation_height(NetworkUpgrade::Ycash),
+            Some(BlockHeight(510_248))
+        );
+        assert_eq!(TEST_NETWORK.activation_height(NetworkUpgrade::Vault), None);
+    }
+
+    // Kills: <NetworkUpgrade as Display>::fmt -> Ok(Default::default()).
+    #[test]
+    fn network_upgrade_display() {
+        use alloc::string::ToString;
+        assert_eq!(NetworkUpgrade::Vault.to_string(), "Vault");
+        assert_eq!(NetworkUpgrade::Ycash.to_string(), "Ycash");
+        assert_eq!(NetworkUpgrade::Nu6_1.to_string(), "Nu6.1");
+    }
+
+    // Kills: BranchId::height_bounds -> None.
+    #[test]
+    fn branch_height_bounds() {
+        use super::TEST_NETWORK;
+        assert_eq!(
+            BranchId::Sapling.height_bounds(&TEST_NETWORK),
+            Some((BlockHeight(280_000), Some(BlockHeight(510_248))))
+        );
+        assert_eq!(
+            BranchId::Sprout.height_bounds(&TEST_NETWORK),
+            Some((BlockHeight(0), Some(BlockHeight(207_500))))
+        );
+        assert_eq!(BranchId::Vault.height_bounds(&TEST_NETWORK), None);
+    }
+
+    // Kills: BranchId::has_sprout -> true and -> false.
+    #[test]
+    fn branch_has_sprout() {
+        assert!(BranchId::Vault.has_sprout());
+        assert!(BranchId::Sprout.has_sprout());
+        #[cfg(zcash_unstable = "nu7")]
+        assert!(!BranchId::Nu7.has_sprout());
+    }
+
+    // Kills: BranchId::has_sapling -> true.
+    #[test]
+    fn branch_has_sapling() {
+        assert!(!BranchId::Sprout.has_sapling());
+        assert!(!BranchId::Overwinter.has_sapling());
+        assert!(BranchId::Vault.has_sapling());
+    }
+
+    // Kills: BranchId::has_orchard -> false.
+    #[test]
+    fn branch_has_orchard() {
+        assert!(BranchId::Nu5.has_orchard());
+        assert!(BranchId::Nu6_2.has_orchard());
+        assert!(!BranchId::Vault.has_orchard());
+    }
 }
