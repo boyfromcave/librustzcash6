@@ -1423,12 +1423,23 @@ mod tests {
     #[cfg(feature = "transparent-inputs")]
     fn account_produces_expected_ua_sequence() {
         use zcash_client_backend::data_api::{AccountBirthday, AccountSource, WalletRead};
+        use zcash_keys::keys::transparent::gap_limits::GapLimits;
         use zcash_primitives::block::BlockHash;
 
         let network = Network::MainNetwork;
         let data_file = NamedTempFile::new().unwrap();
-        let mut db_data =
-            WalletDb::for_path(data_file.path(), network, test_clock(), test_rng()).unwrap();
+        // Ycash: the Ycash vectors below reach external index 11 with no address used, past the
+        // default external gap limit of 10 (indices 0..=9); the Zcash vectors stopped at 4. A
+        // gap limit of 20 lets the sequence be walked; the default limit itself is enforced by
+        // the gap-limit tests.
+        let defaults = GapLimits::default();
+        let mut db_data = WalletDb::for_path(data_file.path(), network, test_clock(), test_rng())
+            .unwrap()
+            .with_gap_limits(GapLimits::new(
+                20,
+                defaults.internal(),
+                defaults.ephemeral(),
+            ));
         assert_matches!(init_wallet_db(&mut db_data, None), Ok(_));
 
         // Prior to adding any accounts, every seed phrase is relevant to the wallet.
@@ -1472,7 +1483,35 @@ mod tests {
             ))
         );
 
-        for tv in &test_vectors::UNIFIED[..3] {
+        // Ycash: the upstream expectations here were `test_vectors::UNIFIED[..3]`, the Zcash
+        // vectors for this seed, derived with Zcash's coin type 133. Ycash mainnet derives with
+        // its own SLIP-44 coin type 347 (`zcash_protocol::constants::mainnet::COIN_TYPE`), so the
+        // wallet's keys, and with them the first valid Sapling diversifier indices, differ. The
+        // vectors below are the same seed's ZIP 32 Sapling (m/32'/347'/0', first valid
+        // diversifiers at or after 0) and BIP 44 transparent (m/44'/347'/0'/0/d) receivers,
+        // encoded as transparent+Sapling unified addresses; that derivation with coin type 133
+        // reproduces `UNIFIED[0..3]` (indices 0, 3, 4) exactly.
+        assert_eq!(network.coin_type(), 347);
+        struct YcashVector {
+            unified_addr: &'static str,
+            diversifier_index: u32,
+        }
+        let ycash_vectors = [
+            YcashVector {
+                unified_addr: "u1h3tys8xu9mwuav2qyawug9w022sk96tn8wsr6cupwrph3aumuu99aw55v24rpgrdxnmd0zkyvkxmwtqs2ker2xglu5p72u62n5qy7wjekdg8nfws8pmvnlh20z04ue8v88c658kkw3p",
+                diversifier_index: 2,
+            },
+            YcashVector {
+                unified_addr: "u1ftcnazxjyapytpsntss9z2t7g22c0d4frqghffdxzs59tnvdsmfc5z2qz7jh80amxe88ks5hrpgzj7j9nv44sgcydp2456t5yvymhmvjhh55apqyuk4q2xkmuevktktuhfefcryyhd6",
+                diversifier_index: 6,
+            },
+            YcashVector {
+                unified_addr: "u1ckpqk4zelmsetm29z8ejzt25tkjq4l9yr7dkxzjp3p4fs4vh4rrhxds5t55284wn6qf2acjzx4w6489vvuya0f7wy6pmrrw3vcpykngm7hr5d0nq3av2nsehzdeyzkdnl45fshyg2yp",
+                diversifier_index: 11,
+            },
+        ];
+
+        for (i, tv) in ycash_vectors.iter().enumerate() {
             if let Some(Address::Unified(tvua)) =
                 Address::decode(&Network::MainNetwork, tv.unified_addr)
             {
@@ -1483,7 +1522,8 @@ mod tests {
                     &db_data.conn,
                     &db_data.params,
                     account_id,
-                    if tv.diversifier_index == 0 {
+                    // The first vector is the account's default address (upstream: index 0).
+                    if i == 0 {
                         UnifiedAddressRequest::AllAvailableKeys
                     } else {
                         ua_request
