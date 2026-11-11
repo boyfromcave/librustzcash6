@@ -112,6 +112,11 @@ ignoreUntil = 2027-01-25
 reason = "block-buffer 0.10.4 and 0.11.0-rc.3 under digest (sha2, blake2b_simd's digest impls) in the six crates. GHSA-qwgh-2vcv-g2f7 (moderate, GitHub-only, not in the RustSec database cargo-deny reads): a panic caught inside a digest's compress callback can leave block-buffer's cursor out of range, so a later use of the same buffer reads or writes out of bounds. Fixed only in 0.12.1 (the digest 0.11 line); the digest 0.10 line, which every released sha2/sha3/blake2 still uses, has no fixed release. ycashd, the consumer of those crates, builds its Rust library with panic = 'abort', and nothing in this workspace calls catch_unwind, so a panic inside a compress callback is never caught and the cursor is never reused. Revisit when the RustCrypto hashes ship on digest 0.11."
 
 [[IgnoredVulns]]
+id = "RUSTSEC-2026-0459"
+ignoreUntil = 2026-12-11
+reason = "Triaged 2026-11-11. libsqlite3-sys 0.37.0 bundles SQLite < 3.54.0 (CVE-2026-119375: a database opened with a crafted -wal of a different page size can return uninitialised page-cache memory). The fix, libsqlite3-sys 0.39, needs rusqlite 0.41; rusqlite 0.39 is the workspace pin (Cargo.toml) that arti-client and schemerz-rusqlite must match, so it is a coordinated upgrade with the wallet consumers (yew, x402-ycash light, same expiry), not a lockfile edit. Wallet crates only (zcash_client_sqlite); not in the six crates ycash6 builds. deny.toml carries the same id"
+
+[[IgnoredVulns]]
 id = "RUSTSEC-2026-0395"
 ignoreUntil = 2027-01-25
 reason = "zstd-safe 7.1.0 (zstd 0.13.1 <- async-compression 0.4.11 <- tor-dirclient, arti-client 0.35 under zcash_client_backend `tor`): the fix is 8.2.0, which zstd 0.13 cannot take (zstd 0.14 needs a newer async-compression/arti than tor-dirclient 0.35 allows); that path only decompresses Tor directory documents; not in the six crates. zstd-sys is bumped to 2.1.2 in Cargo.lock instead (RUSTSEC-2026-0410, wasm32 only). deny.toml lists RUSTSEC-2026-0403, the one cargo-deny reports"
