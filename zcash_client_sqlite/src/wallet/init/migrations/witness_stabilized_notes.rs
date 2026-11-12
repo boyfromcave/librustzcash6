@@ -416,9 +416,39 @@ mod tests {
     fn gap_in_scanned_coverage_prevents_stabilization() {
         use zcash_client_backend::data_api::scanning::ScanPriority;
 
+        use zcash_protocol::{
+            consensus::{NetworkUpgrade, Parameters},
+            local_consensus::LocalNetwork,
+        };
+
         use crate::wallet::scanning::{mark_stabilized_notes, priority_code};
 
-        let network = Network::TestNetwork;
+        // Ycash never activated NU5: its TestNetwork has no NU5 height, so
+        // `v_orchard_shard_scan_ranges` gives shard 0 a NULL start height and joins it to no
+        // scan range (the state that view's doc calls unobservable, since a chain without NU5
+        // has no Orchard shards). The Orchard half of this scenario therefore needs NU5 active:
+        // Ycash's testnet heights, plus NU5 at Zcash testnet's 1,842,420, which the scenario's
+        // heights are placed above (upstream ran this on Zcash's TestNetwork).
+        let ycash_testnet = Network::TestNetwork;
+        assert_eq!(ycash_testnet.activation_height(NetworkUpgrade::Nu5), None);
+        let at = |nu| ycash_testnet.activation_height(nu);
+        let network = LocalNetwork {
+            overwinter: at(NetworkUpgrade::Overwinter),
+            sapling: at(NetworkUpgrade::Sapling),
+            ycash: at(NetworkUpgrade::Ycash),
+            blossom: at(NetworkUpgrade::Blossom),
+            heartwood: at(NetworkUpgrade::Heartwood),
+            canopy: at(NetworkUpgrade::Canopy),
+            nu5: Some(1_842_420.into()),
+            nu6: None,
+            nu6_1: None,
+            nu6_2: None,
+            vault: at(NetworkUpgrade::Vault),
+            #[cfg(zcash_unstable = "nu7")]
+            nu7: None,
+            #[cfg(zcash_unstable = "zfuture")]
+            z_future: None,
+        };
         let data_file = NamedTempFile::new().unwrap();
         let mut db_data =
             WalletDb::for_path(data_file.path(), network, test_clock(), test_rng()).unwrap();

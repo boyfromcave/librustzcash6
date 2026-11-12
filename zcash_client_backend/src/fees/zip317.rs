@@ -272,7 +272,7 @@ mod tests {
     use zcash_primitives::transaction::fees::zip317::FeeRule as Zip317FeeRule;
     use zcash_protocol::{
         ShieldedProtocol,
-        consensus::{Network, NetworkUpgrade, Parameters},
+        consensus::{BlockHeight, Network, NetworkUpgrade, Parameters},
         value::Zatoshis,
     };
 
@@ -294,10 +294,53 @@ mod tests {
         crate::fees::orchard as orchard_fees,
     };
 
-    // Ignored on the Ycash fork: these tests build transactions at the NU5
-    // activation height, but Ycash never activated NU5 (activation_height is None).
+    #[cfg(feature = "orchard")]
+    use zcash_protocol::local_consensus::LocalNetwork;
+
+    /// The height the Sapling and transparent tests below build at.
+    ///
+    /// Ycash: upstream built every test here at Zcash testnet's NU5 activation height. Ycash
+    /// never activated NU5 (`activation_height(Nu5)` is `None` on every Ycash network), so these
+    /// tests build at Ycash testnet's Canopy activation height instead: Canopy is the latest
+    /// upgrade active on Ycash testnet (Vault, also v4, has no testnet height), and its rules are
+    /// the ones Ycash's Sapling and transparent wallets build under. The ZIP 317 fee rule reads
+    /// neither the network nor the height, so the expected fees and change are upstream's.
+    fn ycash_target_height() -> BlockHeight {
+        Network::TestNetwork
+            .activation_height(NetworkUpgrade::Canopy)
+            .expect("Ycash testnet activates Canopy")
+    }
+
+    /// Ycash testnet's activation heights plus NU5 at Zcash testnet's 1,842,420.
+    ///
+    /// Ycash: Orchard does not exist on Ycash. The Orchard change test below keeps exercising the
+    /// change strategy's Orchard code path (shared with upstream) on a local network where NU5
+    /// is active, as it was on the Zcash testnet upstream ran it on.
+    #[cfg(feature = "orchard")]
+    fn ycash_testnet_with_nu5() -> LocalNetwork {
+        let ycash_testnet = Network::TestNetwork;
+        assert_eq!(ycash_testnet.activation_height(NetworkUpgrade::Nu5), None);
+        let at = |nu| ycash_testnet.activation_height(nu);
+        LocalNetwork {
+            overwinter: at(NetworkUpgrade::Overwinter),
+            sapling: at(NetworkUpgrade::Sapling),
+            ycash: at(NetworkUpgrade::Ycash),
+            blossom: at(NetworkUpgrade::Blossom),
+            heartwood: at(NetworkUpgrade::Heartwood),
+            canopy: at(NetworkUpgrade::Canopy),
+            nu5: Some(1_842_420.into()),
+            nu6: None,
+            nu6_1: None,
+            nu6_2: None,
+            vault: at(NetworkUpgrade::Vault),
+            #[cfg(zcash_unstable = "nu7")]
+            nu7: None,
+            #[cfg(zcash_unstable = "zfuture")]
+            z_future: None,
+        }
+    }
+
     #[test]
-    #[ignore = "Ycash does not activate NU5, which these tests assume"]
     fn change_without_dust() {
         let change_strategy = SingleOutputChangeStrategy::<_, MockWalletDb>::new(
             Zip317FeeRule::standard(),
@@ -309,10 +352,7 @@ mod tests {
         // spend a single Sapling note that is sufficient to pay the fee
         let result = change_strategy.compute_balance(
             &Network::TestNetwork,
-            Network::TestNetwork
-                .activation_height(NetworkUpgrade::Nu5)
-                .unwrap()
-                .into(),
+            ycash_target_height().into(),
             &[] as &[TestTransparentInput],
             &[] as &[TxOut],
             &(
@@ -338,7 +378,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore = "Ycash does not activate NU5, which these tests assume"]
     fn change_without_dust_multi() {
         let change_strategy = MultiOutputChangeStrategy::<_, MockWalletDb>::new(
             Zip317FeeRule::standard(),
@@ -356,10 +395,7 @@ mod tests {
             let balance = |existing_notes, total| {
                 change_strategy.compute_balance(
                     &Network::TestNetwork,
-                    Network::TestNetwork
-                        .activation_height(NetworkUpgrade::Nu5)
-                        .unwrap()
-                        .into(),
+                    ycash_target_height().into(),
                     &[] as &[TestTransparentInput],
                     &[] as &[TxOut],
                     &(
@@ -407,10 +443,7 @@ mod tests {
             // sufficient to produce 5
             let result = change_strategy.compute_balance(
                 &Network::TestNetwork,
-                Network::TestNetwork
-                    .activation_height(NetworkUpgrade::Nu5)
-                    .unwrap()
-                    .into(),
+                ycash_target_height().into(),
                 &[] as &[TestTransparentInput],
                 &[] as &[TxOut],
                 &(
@@ -448,10 +481,7 @@ mod tests {
             // has been requested such that it exactly empties the wallet
             let result = change_strategy.compute_balance(
                 &Network::TestNetwork,
-                Network::TestNetwork
-                    .activation_height(NetworkUpgrade::Nu5)
-                    .unwrap()
-                    .into(),
+                ycash_target_height().into(),
                 &[] as &[TestTransparentInput],
                 &[] as &[TxOut],
                 &(
@@ -484,10 +514,7 @@ mod tests {
             // spend a single Sapling note, with insufficient funds to cover the minimum fee.
             let result = change_strategy.compute_balance(
                 &Network::TestNetwork,
-                Network::TestNetwork
-                    .activation_height(NetworkUpgrade::Nu5)
-                    .unwrap()
-                    .into(),
+                ycash_target_height().into(),
                 &[] as &[TestTransparentInput],
                 &[] as &[TxOut],
                 &(
@@ -525,10 +552,7 @@ mod tests {
             // is no change output.
             let result = change_strategy.compute_balance(
                 &Network::TestNetwork,
-                Network::TestNetwork
-                    .activation_height(NetworkUpgrade::Nu5)
-                    .unwrap()
-                    .into(),
+                ycash_target_height().into(),
                 &[] as &[TestTransparentInput],
                 &[] as &[TxOut],
                 &(
@@ -564,6 +588,7 @@ mod tests {
     #[test]
     #[cfg(feature = "orchard")]
     fn cross_pool_change_without_dust() {
+        let orchard_network = ycash_testnet_with_nu5();
         let change_strategy = SingleOutputChangeStrategy::<_, MockWalletDb>::new(
             Zip317FeeRule::standard(),
             None,
@@ -573,8 +598,8 @@ mod tests {
 
         // spend a single Sapling note that is sufficient to pay the fee
         let result = change_strategy.compute_balance(
-            &Network::TestNetwork,
-            Network::TestNetwork
+            &orchard_network,
+            orchard_network
                 .activation_height(NetworkUpgrade::Nu5)
                 .unwrap()
                 .into(),
@@ -606,13 +631,11 @@ mod tests {
     }
 
     #[test]
-    #[ignore = "Ycash does not activate NU5, which these tests assume"]
     fn change_with_transparent_payments_implicitly_allowing_zero_change() {
         change_with_transparent_payments(DustOutputPolicy::default())
     }
 
     #[test]
-    #[ignore = "Ycash does not activate NU5, which these tests assume"]
     fn change_with_transparent_payments_explicitly_allowing_zero_change() {
         change_with_transparent_payments(DustOutputPolicy::new(
             DustAction::AllowDustChange,
@@ -631,10 +654,7 @@ mod tests {
         // spend a single Sapling note that is sufficient to pay the fee
         let result = change_strategy.compute_balance(
             &Network::TestNetwork,
-            Network::TestNetwork
-                .activation_height(NetworkUpgrade::Nu5)
-                .unwrap()
-                .into(),
+            ycash_target_height().into(),
             &[] as &[TestTransparentInput],
             &[TxOut::new(
                 Zatoshis::const_from_u64(40000),
@@ -678,10 +698,7 @@ mod tests {
         // Spend a single transparent UTXO that is exactly sufficient to pay the fee.
         let result = change_strategy.compute_balance::<_, Infallible>(
             &Network::TestNetwork,
-            Network::TestNetwork
-                .activation_height(NetworkUpgrade::Nu5)
-                .unwrap()
-                .into(),
+            ycash_target_height().into(),
             &[TestTransparentInput {
                 outpoint: OutPoint::fake(),
                 coin: TxOut::new(
@@ -724,10 +741,7 @@ mod tests {
         // Spend a single transparent UTXO that is sufficient to pay the fee.
         let result = change_strategy.compute_balance::<_, Infallible>(
             &Network::TestNetwork,
-            Network::TestNetwork
-                .activation_height(NetworkUpgrade::Nu5)
-                .unwrap()
-                .into(),
+            ycash_target_height().into(),
             &[TestTransparentInput {
                 outpoint: OutPoint::fake(),
                 coin: TxOut::new(
@@ -776,10 +790,7 @@ mod tests {
         // normally be considered dust, because we set the dust policy to allow that.
         let result = change_strategy.compute_balance::<_, Infallible>(
             &Network::TestNetwork,
-            Network::TestNetwork
-                .activation_height(NetworkUpgrade::Nu5)
-                .unwrap()
-                .into(),
+            ycash_target_height().into(),
             &[TestTransparentInput {
                 outpoint: OutPoint::fake(),
                 coin: TxOut::new(
@@ -807,13 +818,11 @@ mod tests {
     }
 
     #[test]
-    #[ignore = "Ycash does not activate NU5, which these tests assume"]
     fn change_with_allowable_dust_implicitly_allowing_zero_change() {
         change_with_allowable_dust(DustOutputPolicy::default())
     }
 
     #[test]
-    #[ignore = "Ycash does not activate NU5, which these tests assume"]
     fn change_with_allowable_dust_explicitly_allowing_zero_change() {
         change_with_allowable_dust(DustOutputPolicy::new(
             DustAction::AllowDustChange,
@@ -835,10 +844,7 @@ mod tests {
         // zero-valued change output), so we have just enough.
         let result = change_strategy.compute_balance(
             &Network::TestNetwork,
-            Network::TestNetwork
-                .activation_height(NetworkUpgrade::Nu5)
-                .unwrap()
-                .into(),
+            ycash_target_height().into(),
             &[] as &[TestTransparentInput],
             &[] as &[TxOut],
             &(
@@ -870,7 +876,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore = "Ycash does not activate NU5, which these tests assume"]
     fn change_with_disallowed_dust() {
         let change_strategy = SingleOutputChangeStrategy::<_, MockWalletDb>::new(
             Zip317FeeRule::standard(),
@@ -883,10 +888,7 @@ mod tests {
         // note increases the number of actions, and so it is uneconomic to spend it.
         let result = change_strategy.compute_balance(
             &Network::TestNetwork,
-            Network::TestNetwork
-                .activation_height(NetworkUpgrade::Nu5)
-                .unwrap()
-                .into(),
+            ycash_target_height().into(),
             &[] as &[TestTransparentInput],
             &[] as &[TxOut],
             &(

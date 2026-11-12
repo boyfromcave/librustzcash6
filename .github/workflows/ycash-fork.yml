@@ -183,6 +183,52 @@ jobs:
           cargo clippy --locked --lib -p zcash_primitives --features "$PRIMITIVES_FEATURES" -- -D warnings
           cargo clippy --locked --lib -p zcash_transparent -p zcash_address -p zcash_encoding -p f4jumble -- -D warnings
 
+  # The client crates yew (core, yewd) and x402-ycash (light) build on: their fee and change
+  # computation, proposals and the SQLite note store. No other workflow on the fork's branches runs
+  # their tests (upstream's ci.yml is scoped to upstream). Two feature sets: the consumers' own
+  # (x402-ycash light/Cargo.toml: zcash_client_backend `unstable non-standard-fees`,
+  # zcash_client_sqlite `unstable`, defaults on; yew enables nothing beyond what light does), and
+  # the wider set that also compiles the transparent-input and Orchard code paths and their tests.
+  # `test-dependencies` only builds the test helpers. Two test threads bound the SQLite suites'
+  # memory and file use on the runner.
+  client-crates:
+    name: client crates (zcash_client_backend, zcash_client_sqlite)
+    if: github.event_name != 'schedule' && (inputs.tier || 'push') == 'push'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - id: toolchain
+        name: Read the toolchain pin (rust-toolchain.toml)
+        run: |
+          chan=$(sed -n 's/^channel = "\(.*\)"/\1/p' rust-toolchain.toml)
+          test -n "$chan"
+          echo "channel=$chan" >> "$GITHUB_OUTPUT"
+      - uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # v1
+        with:
+          toolchain: ${{ steps.toolchain.outputs.channel }}
+      - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
+        with:
+          shared-key: ycash-fork-client-crates
+      - name: the consumers' features (unstable, non-standard-fees)
+        env:
+          FEATURES: zcash_client_backend/unstable zcash_client_backend/non-standard-fees zcash_client_backend/test-dependencies zcash_client_sqlite/unstable zcash_client_sqlite/test-dependencies
+        run: >-
+          cargo test --locked -p zcash_client_backend -p zcash_client_sqlite --features "$FEATURES"
+          -- --test-threads=2
+      - name: wider (adds transparent-inputs and orchard)
+        if: ${{ !cancelled() }}
+        env:
+          FEATURES: zcash_client_backend/unstable zcash_client_backend/non-standard-fees zcash_client_backend/transparent-inputs zcash_client_backend/orchard zcash_client_backend/test-dependencies zcash_client_sqlite/unstable zcash_client_sqlite/transparent-inputs zcash_client_sqlite/orchard zcash_client_sqlite/test-dependencies
+        run: >-
+          cargo test --locked -p zcash_client_backend -p zcash_client_sqlite --features "$FEATURES"
+          -- --test-threads=2
+      - name: Working directory is clean
+        if: ${{ !cancelled() }}
+        run: git diff --exit-code
+
   # RUSTSEC-2026-0459 upgrade, step 1 (beta2 lane SQLITE-UPGRADE): the workspace requirement says
   # rusqlite >=0.39, <0.42 so that yew and x402-ycash light, which never enable `tor`, can lock 0.41
   # (bundled SQLite 3.54.x). This lock cannot: arti's tor-dirmgr (0.44 here, 0.48 newest) caps
@@ -222,21 +268,16 @@ jobs:
           grep -A1 '^name = "libsqlite3-sys"$' Cargo.lock | grep -q '^version = "0\.39\.'
           test "$(grep -c '^name = "rusqlite"$' Cargo.lock)" = 1
           if grep -q '^name = "arti-client"$' Cargo.lock; then echo "arti still in the lock"; exit 1; fi
-      # Two tests fail identically on rusqlite 0.39 at this revision (a fork defect, not SQLite's:
-      # account_produces_expected_ua_sequence gets diversifier index 0 for the third Zcash test
-      # vector; gap_in_scanned_coverage_prevents_stabilization stabilizes an Orchard note), so they
-      # are skipped here by name and tracked separately; every other test must pass on 0.41.
       - name: zcash_client_sqlite and schemerz-rusqlite tests on rusqlite 0.41
         env:
           FEATURES: zcash_client_sqlite/unstable zcash_client_sqlite/transparent-inputs zcash_client_sqlite/orchard zcash_client_sqlite/test-dependencies
         run: >-
-          cargo test --locked -p zcash_client_sqlite -p schemerz-rusqlite --features "$FEATURES" --
-          --skip wallet::init::tests::account_produces_expected_ua_sequence
-          --skip wallet::init::migrations::witness_stabilized_notes::tests::gap_in_scanned_coverage_prevents_stabilization
+          cargo test --locked -p zcash_client_sqlite -p schemerz-rusqlite --features "$FEATURES"
+          -- --test-threads=2
 
   gate:
     name: push tier
-    needs: [test, check, lint, rusqlite-041]
+    needs: [test, check, lint, client-crates, rusqlite-041]
     if: ${{ always() && github.event_name != 'schedule' && (inputs.tier || 'push') == 'push' }}
     runs-on: ubuntu-22.04
     timeout-minutes: 5
