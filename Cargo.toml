@@ -149,7 +149,11 @@ subtle = { version = "2.2.3", default-features = false }
 # - Warning: One of the downstream consumers requires that SQLite be available through
 #   CocoaPods, due to being bound to React Native. We need to ensure that the SQLite
 #   version required for `rusqlite` is a version that is available through CocoaPods.
-rusqlite = { version = "0.39", features = ["bundled", "fallible_uint"] }
+# - Ycash (RUSTSEC-2026-0459, 2026-11-11): >=0.39, <0.42 so that consumers without the `tor`
+#   feature (yew, x402-ycash light) can lock rusqlite 0.41 (bundled SQLite 3.54.x). This lock stays
+#   at 0.39 while arti (tor-dirmgr, `tor` below) caps rusqlite below 0.41: one graph links one
+#   `sqlite3`. CI job `rusqlite-041` (.github/workflows/ycash-fork.yml) tests the client crates on 0.41.
+rusqlite = { version = ">=0.39, <0.42", features = ["bundled", "fallible_uint"] }
 schemerz = "0.2"
 schemerz-rusqlite = "0.370"
 time = { version = "0.3.22", default-features = false }
