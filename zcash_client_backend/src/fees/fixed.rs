@@ -121,7 +121,7 @@ mod tests {
     };
     use zcash_protocol::{
         ShieldedProtocol,
-        consensus::{Network, NetworkUpgrade, Parameters},
+        consensus::{BlockHeight, Network, NetworkUpgrade, Parameters},
         value::Zatoshis,
     };
 
@@ -137,6 +137,19 @@ mod tests {
     #[cfg(feature = "orchard")]
     use crate::fees::orchard as orchard_fees;
 
+    /// The height these tests build at.
+    ///
+    /// Ycash: upstream built them at Zcash testnet's NU5 activation height. Ycash never activated
+    /// NU5 (`activation_height(Nu5)` is `None` on every Ycash network), so they build at Ycash
+    /// testnet's Canopy activation height, the latest upgrade active there (Vault, also v4, has
+    /// no testnet height). The fixed fee rule reads neither the network nor the height, so the
+    /// expected fees and change are upstream's.
+    fn ycash_target_height() -> BlockHeight {
+        Network::TestNetwork
+            .activation_height(NetworkUpgrade::Canopy)
+            .expect("Ycash testnet activates Canopy")
+    }
+
     #[test]
     fn change_without_dust() {
         let fee_rule = FixedFeeRule::non_standard(MINIMUM_FEE);
@@ -150,10 +163,7 @@ mod tests {
         // spend a single Sapling note that is sufficient to pay the fee
         let result = change_strategy.compute_balance(
             &Network::TestNetwork,
-            Network::TestNetwork
-                .activation_height(NetworkUpgrade::Nu5)
-                .unwrap()
-                .into(),
+            ycash_target_height().into(),
             &[] as &[TestTransparentInput],
             &[] as &[TxOut],
             &(
@@ -191,10 +201,7 @@ mod tests {
         // spend a single Sapling note that is sufficient to pay the fee
         let result = change_strategy.compute_balance(
             &Network::TestNetwork,
-            Network::TestNetwork
-                .activation_height(NetworkUpgrade::Nu5)
-                .unwrap()
-                .into(),
+            ycash_target_height().into(),
             &[] as &[TestTransparentInput],
             &[] as &[TxOut],
             &(
