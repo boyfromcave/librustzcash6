@@ -508,6 +508,11 @@ impl Parameters for MainNetwork {
 }
 
 /// Marker struct for the test network.
+///
+/// On Ycash this is the project's testnet, testnet-yb-fast: the re-forked testnet that ycashd's
+/// `CTestNetParams` and `CTestNetFastParams` describe (`src/chainparams.cpp`), the default
+/// `-testnet` profile of both node lines. The shadow-fork profiles testnet-yb-slow and
+/// testnet-legacy copy mainnet's history instead and are not described by this type.
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]
 pub struct TestNetwork;
 
@@ -526,18 +531,23 @@ impl Parameters for TestNetwork {
         match nu {
             NetworkUpgrade::Overwinter => Some(BlockHeight(207_500)),
             NetworkUpgrade::Sapling => Some(BlockHeight(280_000)),
-            // Ycash testnet activation heights (see ycashd chainparams.cpp).
+            // The re-forked Ycash testnet (ycashd chainparams.cpp, CTestNetParams): Zcash testnet
+            // through 510,247, a new Ycash fork block at 510,248, then Blossom, Heartwood and
+            // Canopy two blocks apart. The old Ycash testnet's 661,610 / 661,622 / 661,634 are
+            // run by no node any more.
             NetworkUpgrade::Ycash => Some(BlockHeight(510_248)),
-            NetworkUpgrade::Blossom => Some(BlockHeight(661_610)),
-            NetworkUpgrade::Heartwood => Some(BlockHeight(661_622)),
-            NetworkUpgrade::Canopy => Some(BlockHeight(661_634)),
-            // Ycash has not activated NU5 or any later upgrade on testnet.
+            NetworkUpgrade::Blossom => Some(BlockHeight(510_250)),
+            NetworkUpgrade::Heartwood => Some(BlockHeight(510_252)),
+            NetworkUpgrade::Canopy => Some(BlockHeight(510_254)),
+            // Ycash has not activated NU5 or any later Zcash upgrade on testnet.
             NetworkUpgrade::Nu5 => None,
             NetworkUpgrade::Nu6 => None,
             NetworkUpgrade::Nu6_1 => None,
             NetworkUpgrade::Nu6_2 => None,
-            // The Ycash vault primitive: not yet scheduled.
-            NetworkUpgrade::Vault => None,
+            // The Ycash vault primitive on testnet-yb-fast (ycashd chainparams.cpp,
+            // CTestNetFastParams): H_V = 510,400, a placeholder until the testnet's launch
+            // ceremony; this row follows ycashd's if it moves.
+            NetworkUpgrade::Vault => Some(BlockHeight(510_400)),
             #[cfg(zcash_unstable = "nu7")]
             NetworkUpgrade::Nu7 => None,
             #[cfg(zcash_unstable = "zfuture")]
@@ -1227,7 +1237,11 @@ mod tests {
             TEST_NETWORK.activation_height(NetworkUpgrade::Ycash),
             Some(BlockHeight(510_248))
         );
-        assert_eq!(TEST_NETWORK.activation_height(NetworkUpgrade::Vault), None);
+        assert_eq!(
+            TEST_NETWORK.activation_height(NetworkUpgrade::Vault),
+            Some(BlockHeight(510_400))
+        );
+        assert_eq!(MAIN_NETWORK.activation_height(NetworkUpgrade::Vault), None);
     }
 
     // Kills: <NetworkUpgrade as Display>::fmt -> Ok(Default::default()).
@@ -1251,7 +1265,107 @@ mod tests {
             BranchId::Sprout.height_bounds(&TEST_NETWORK),
             Some((BlockHeight(0), Some(BlockHeight(207_500))))
         );
-        assert_eq!(BranchId::Vault.height_bounds(&TEST_NETWORK), None);
+        assert_eq!(
+            BranchId::Vault.height_bounds(&TEST_NETWORK),
+            Some((BlockHeight(510_400), None))
+        );
+        assert_eq!(BranchId::Vault.height_bounds(&MAIN_NETWORK), None);
+    }
+
+    /// ycashd's upgrade schedules (ycash6 `upgrade/vault` @ 01d983770a, `src/chainparams.cpp`
+    /// `CMainParams` 122-157, `CTestNetParams` 441-473, `CTestNetFastParams` 652; branch IDs
+    /// `src/consensus/upgrades.cpp` 14-98): (upgrade, activation height, consensus branch ID).
+    /// Nothing else is scheduled on either network (NU5..NU6.2 `NO_ACTIVATION_HEIGHT`, mainnet's
+    /// Vault unset until its release).
+    const YCASHD_MAINNET: [(NetworkUpgrade, u32, u32); 6] = [
+        (NetworkUpgrade::Overwinter, 347_500, 0x5ba8_1b19),
+        (NetworkUpgrade::Sapling, 419_200, 0x76b8_09bb),
+        (NetworkUpgrade::Ycash, 570_000, 0x374d_694f),
+        (NetworkUpgrade::Blossom, 1_100_000, 0x8e47_1bd6),
+        (NetworkUpgrade::Heartwood, 1_100_003, 0x6631_4da3),
+        (NetworkUpgrade::Canopy, 1_100_006, 0x19bd_2d2f),
+    ];
+    const YCASHD_TESTNET_FAST: [(NetworkUpgrade, u32, u32); 7] = [
+        (NetworkUpgrade::Overwinter, 207_500, 0x5ba8_1b19),
+        (NetworkUpgrade::Sapling, 280_000, 0x76b8_09bb),
+        (NetworkUpgrade::Ycash, 510_248, 0x374d_694f),
+        (NetworkUpgrade::Blossom, 510_250, 0x8e47_1bd6),
+        (NetworkUpgrade::Heartwood, 510_252, 0x6631_4da3),
+        (NetworkUpgrade::Canopy, 510_254, 0x19bd_2d2f),
+        (NetworkUpgrade::Vault, 510_400, 0x6d5b_7a31),
+    ];
+
+    /// The consensus branch ID ycashd uses at `height`, from a schedule above.
+    fn ycashd_branch_at(schedule: &[(NetworkUpgrade, u32, u32)], height: u32) -> u32 {
+        schedule
+            .iter()
+            .rev()
+            .find(|(_, h, _)| *h <= height)
+            .map_or(0, |(_, _, id)| *id)
+    }
+
+    fn assert_schedule<P: Parameters>(params: &P, schedule: &[(NetworkUpgrade, u32, u32)]) {
+        for nu in UPGRADES_IN_ORDER {
+            let want = schedule
+                .iter()
+                .find(|(n, _, _)| n == nu)
+                .map(|(_, h, _)| BlockHeight(*h));
+            assert_eq!(params.activation_height(*nu), want, "{nu}");
+        }
+        for (nu, h, id) in schedule {
+            assert_eq!(u32::from(nu.branch_id()), *id, "{nu}");
+            // Each side of every boundary.
+            for height in [h - 1, *h, h + 1] {
+                assert_eq!(
+                    u32::from(BranchId::for_height(params, BlockHeight(height))),
+                    ycashd_branch_at(schedule, height),
+                    "{nu} at {height}"
+                );
+            }
+        }
+    }
+
+    // Mainnet is unchanged by the testnet schedule: every upgrade and both sides of every
+    // boundary carry ycashd's branch ID, and Canopy stays in effect after 1,100,006.
+    #[test]
+    fn mainnet_schedule_matches_ycashd() {
+        assert_schedule(&MAIN_NETWORK, &YCASHD_MAINNET);
+        for h in [0, 1, 347_499, 2_000_000, 5_000_000] {
+            assert_eq!(
+                u32::from(BranchId::for_height(&MAIN_NETWORK, BlockHeight(h))),
+                ycashd_branch_at(&YCASHD_MAINNET, h),
+                "{h}"
+            );
+        }
+    }
+
+    // TEST_NETWORK is testnet-yb-fast: ycashd's heights, Vault at 510,400, and the branch a
+    // transaction for any of these heights signs under.
+    #[test]
+    fn testnet_fast_schedule_matches_ycashd() {
+        use super::TEST_NETWORK;
+        assert_schedule(&TEST_NETWORK, &YCASHD_TESTNET_FAST);
+        let at = |h| BranchId::for_height(&TEST_NETWORK, BlockHeight(h));
+        assert_eq!(at(510_247), BranchId::Sapling);
+        assert_eq!(at(510_248), BranchId::Ycash);
+        assert_eq!(at(510_250), BranchId::Blossom);
+        assert_eq!(at(510_252), BranchId::Heartwood);
+        assert_eq!(at(510_254), BranchId::Canopy);
+        assert_eq!(at(510_399), BranchId::Canopy);
+        assert_eq!(at(510_400), BranchId::Vault);
+        assert_eq!(at(510_421), BranchId::Vault);
+        assert_eq!(u32::from(at(510_421)), 0x6d5b_7a31);
+        assert_eq!(u32::from(at(510_300)), 0x19bd_2d2f);
+        // Vault on Ycash is v4/Sapling-era: no Orchard at any testnet height.
+        assert!(!at(510_421).has_orchard());
+        // The upgrades are in UPGRADES_IN_ORDER's order on testnet as well.
+        let mut last = BlockHeight(0);
+        for nu in UPGRADES_IN_ORDER {
+            if let Some(h) = TEST_NETWORK.activation_height(*nu) {
+                assert!(h > last, "{nu}");
+                last = h;
+            }
+        }
     }
 
     // Kills: BranchId::has_sprout -> true and -> false.
