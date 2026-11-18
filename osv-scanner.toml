@@ -161,6 +161,11 @@ id = "RUSTSEC-2026-0406"
 ignoreUntil = 2027-01-25
 reason = "zstd-safe 7.1.0: as RUSTSEC-2026-0395 (arti-client under zcash_client_backend `tor`; not in the six crates)"
 
+[[IgnoredVulns]]
+id = "RUSTSEC-2026-0543"
+ignoreUntil = 2027-02-15
+reason = "Triaged 2026-11-17; accepted by the Yellowback lead architect 2026-11-18. chrono 0.4.38 is unmaintained (informational: unmaintained, no vulnerability, no fixed version): serde-aux <- ens-normalize-rs <- eip681 (components/eip681), and a lock entry from serde_with's optional chrono feature (pczt). Not in the six crates ycashd takes from this repo. Leaves when ens-normalize-rs is bumped to a release without serde-aux (scheduled separately). Also ignored in deny.toml."
+
 # contrib/semgrep/requirements.txt (the shared, hash-locked Semgrep CLI, copied byte-for-byte from
 # ycash-dd) has no open advisory: certifi, mcp and opentelemetry-* are overridden there to fixed
 # versions (contrib/semgrep/security-overrides.txt), so it needs no entry here.
