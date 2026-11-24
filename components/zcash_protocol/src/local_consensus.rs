@@ -32,6 +32,7 @@ use crate::consensus::{BlockHeight, NetworkType, NetworkUpgrade, Parameters};
 ///         nu6_1: Some(BlockHeight::from_u32(1)),
 ///         nu6_2: Some(BlockHeight::from_u32(1)),
 ///         vault: None,
+         yugen: None,
 ///     };
 ///     ```
 ///     
@@ -48,6 +49,8 @@ pub struct LocalNetwork {
     pub nu6_1: Option<BlockHeight>,
     pub nu6_2: Option<BlockHeight>,
     pub vault: Option<BlockHeight>,
+    /// Yugen (after Vault); regtest/devnet only.
+    pub yugen: Option<BlockHeight>,
     #[cfg(zcash_unstable = "nu7")]
     pub nu7: Option<BlockHeight>,
     #[cfg(zcash_unstable = "zfuture")]
@@ -73,6 +76,7 @@ impl Parameters for LocalNetwork {
             NetworkUpgrade::Nu6_1 => self.nu6_1,
             NetworkUpgrade::Nu6_2 => self.nu6_2,
             NetworkUpgrade::Vault => self.vault,
+            NetworkUpgrade::Yugen => self.yugen,
             #[cfg(zcash_unstable = "nu7")]
             NetworkUpgrade::Nu7 => self.nu7,
             #[cfg(zcash_unstable = "zfuture")]
@@ -119,6 +123,7 @@ mod tests {
             nu6_1: Some(expected_nu6_1),
             nu6_2: Some(expected_nu6_2),
             vault: None,
+            yugen: None,
             #[cfg(zcash_unstable = "nu7")]
             nu7: Some(expected_nu7),
             #[cfg(zcash_unstable = "zfuture")]
@@ -170,6 +175,7 @@ mod tests {
             nu6_1: Some(expected_nu6_1),
             nu6_2: Some(expected_nu6_2),
             vault: None,
+            yugen: None,
             #[cfg(zcash_unstable = "nu7")]
             nu7: Some(expected_nu7),
             #[cfg(zcash_unstable = "zfuture")]
@@ -239,6 +245,7 @@ mod tests {
             nu6_1: None,
             nu6_2: None,
             vault: Some(BlockHeight::from_u32(10)),
+            yugen: None,
             #[cfg(zcash_unstable = "nu7")]
             nu7: None,
             #[cfg(zcash_unstable = "zfuture")]
@@ -285,6 +292,7 @@ mod tests {
             nu6_1: Some(expected_nu6_1),
             nu6_2: Some(expected_nu6_2),
             vault: None,
+            yugen: None,
             #[cfg(zcash_unstable = "nu7")]
             nu7: Some(expected_nu7),
             #[cfg(zcash_unstable = "zfuture")]

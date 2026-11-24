@@ -28,6 +28,10 @@ pub const V4_TX_VERSION: u32 = 4;
 ///
 /// This constant is called `SAPLING_VERSION_GROUP_ID` in the zcashd source.
 pub const V4_VERSION_GROUP_ID: u32 = 0x892F2085;
+/// The version group ID of a Ycash Yugen transaction: `nVersion` 4 with `fOverwintered`, the v4
+/// fields, then the Yugen field (ASCII "YGNG"). Distinct from every Zcash group ID (v3
+/// `0x03C48270`, v4 `0x892F2085`, v5 `0x26A7270A`, v6 `0xD884B698` in zakura-chain).
+pub const YUGEN_VERSION_GROUP_ID: u32 = 0x5947_4E47;
 
 /// Transaction version 5, which was introduced by the NU5 network upgrade.
 /// It is specified in [§ 7.1 Transaction Encoding and Consensus](https://zips.z.cash/protocol/protocol.pdf#txnencoding)

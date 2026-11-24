@@ -499,6 +499,8 @@ impl Parameters for MainNetwork {
             NetworkUpgrade::Nu6_2 => None,
             // The Ycash vault primitive: not yet scheduled.
             NetworkUpgrade::Vault => None,
+            // Yugen (post-quantum shielded pool): regtest/devnet only.
+            NetworkUpgrade::Yugen => None,
             #[cfg(zcash_unstable = "nu7")]
             NetworkUpgrade::Nu7 => None,
             #[cfg(zcash_unstable = "zfuture")]
@@ -548,6 +550,8 @@ impl Parameters for TestNetwork {
             // CTestNetFastParams): H_V = 510,400, a placeholder until the testnet's launch
             // ceremony; this row follows ycashd's if it moves.
             NetworkUpgrade::Vault => Some(BlockHeight(510_400)),
+            // Yugen (post-quantum shielded pool): regtest/devnet only.
+            NetworkUpgrade::Yugen => None,
             #[cfg(zcash_unstable = "nu7")]
             NetworkUpgrade::Nu7 => None,
             #[cfg(zcash_unstable = "zfuture")]
@@ -633,6 +637,8 @@ pub enum NetworkUpgrade {
     /// The Ycash Vault network upgrade (the vault primitive: BIP68/BIP112
     /// relative timelocks and signer-set opcodes).
     Vault,
+    /// The Ycash Yugen network upgrade (post-quantum shielded pool), after Vault.
+    Yugen,
     /// The [Nu7 (proposed)] network upgrade.
     ///
     /// [Nu7 (proposed)]: https://z.cash/upgrade/nu7/
@@ -664,6 +670,7 @@ impl fmt::Display for NetworkUpgrade {
             NetworkUpgrade::Nu6_1 => write!(f, "Nu6.1"),
             NetworkUpgrade::Nu6_2 => write!(f, "Nu6.2"),
             NetworkUpgrade::Vault => write!(f, "Vault"),
+            NetworkUpgrade::Yugen => write!(f, "Yugen"),
             #[cfg(zcash_unstable = "nu7")]
             NetworkUpgrade::Nu7 => write!(f, "Nu7"),
             #[cfg(zcash_unstable = "zfuture")]
@@ -686,6 +693,7 @@ impl NetworkUpgrade {
             NetworkUpgrade::Nu6_1 => BranchId::Nu6_1,
             NetworkUpgrade::Nu6_2 => BranchId::Nu6_2,
             NetworkUpgrade::Vault => BranchId::Vault,
+            NetworkUpgrade::Yugen => BranchId::Yugen,
             #[cfg(zcash_unstable = "nu7")]
             NetworkUpgrade::Nu7 => BranchId::Nu7,
             #[cfg(zcash_unstable = "zfuture")]
@@ -710,6 +718,7 @@ const UPGRADES_IN_ORDER: &[NetworkUpgrade] = &[
     NetworkUpgrade::Nu6_1,
     NetworkUpgrade::Nu6_2,
     NetworkUpgrade::Vault,
+    NetworkUpgrade::Yugen,
     #[cfg(zcash_unstable = "nu7")]
     NetworkUpgrade::Nu7,
 ];
@@ -767,6 +776,8 @@ pub enum BranchId {
     Nu6_2,
     /// The consensus rules deployed by [`NetworkUpgrade::Vault`].
     Vault,
+    /// The consensus rules deployed by [`NetworkUpgrade::Yugen`].
+    Yugen,
     /// testnet-yb-slow's shadow-fork upgrade: Canopy's rules under the network's own branch ID.
     ///
     /// The Ycash testnets testnet-yb-slow and testnet-legacy copy Ycash mainnet's history up to
@@ -810,6 +821,7 @@ impl TryFrom<u32> for BranchId {
             0x4dec_4df0 => Ok(BranchId::Nu6_1),
             0x5437_f330 => Ok(BranchId::Nu6_2),
             0x6d5b_7a31 => Ok(BranchId::Vault),
+            0x5947_4e30 => Ok(BranchId::Yugen),
             // The Ycash shadow-fork testnets' own IDs (ycashd chainparams.cpp, testnet-yb-slow
             // and testnet-legacy); they collide with no Zcash or Ycash branch ID.
             0x57a2_4d5d => Ok(BranchId::SlowShadow),
@@ -839,6 +851,7 @@ impl From<BranchId> for u32 {
             BranchId::Nu6_1 => 0x4dec_4df0,
             BranchId::Nu6_2 => 0x5437_f330,
             BranchId::Vault => 0x6d5b_7a31,
+            BranchId::Yugen => 0x5947_4e30,
             BranchId::SlowShadow => 0x57a2_4d5d,
             BranchId::LegacyShadow => 0x3570_6728,
             BranchId::SlowVault => 0xe1f1_cc08,
@@ -941,6 +954,9 @@ impl BranchId {
                 .map(|lower| (lower, params.activation_height(NetworkUpgrade::Vault))),
             BranchId::Vault => params
                 .activation_height(NetworkUpgrade::Vault)
+                .map(|lower| (lower, params.activation_height(NetworkUpgrade::Yugen))),
+            BranchId::Yugen => params
+                .activation_height(NetworkUpgrade::Yugen)
                 .map(|lower| {
                     #[cfg(zcash_unstable = "nu7")]
                     let upper = params.activation_height(NetworkUpgrade::Nu7);
@@ -973,7 +989,7 @@ impl BranchId {
         use BranchId::*;
         match self {
             Sprout | Overwinter | Sapling | Ycash | Blossom | Heartwood | Canopy | Nu5 | Nu6
-            | Nu6_1 | Nu6_2 | Vault | SlowShadow | LegacyShadow | SlowVault => true,
+            | Nu6_1 | Nu6_2 | Vault | Yugen | SlowShadow | LegacyShadow | SlowVault => true,
             #[cfg(zcash_unstable = "nu7")]
             BranchId::Nu7 => false,
             #[cfg(zcash_unstable = "zfuture")]
@@ -987,7 +1003,7 @@ impl BranchId {
         match self {
             Sprout | Overwinter => false,
             Sapling | Ycash | Blossom | Heartwood | Canopy | Nu5 | Nu6 | Nu6_1 | Nu6_2 | Vault
-            | SlowShadow | LegacyShadow | SlowVault => true,
+            | Yugen | SlowShadow | LegacyShadow | SlowVault => true,
             #[cfg(zcash_unstable = "nu7")]
             BranchId::Nu7 => true,
             #[cfg(zcash_unstable = "zfuture")]
@@ -1003,7 +1019,7 @@ impl BranchId {
             // (ycashd ContextualCheckTransaction rejects a non-Sapling version
             // group under Vault, quantum spec rule R-A3).
             Sprout | Overwinter | Sapling | Ycash | Blossom | Heartwood | Canopy | Vault
-            | SlowShadow | LegacyShadow | SlowVault => false,
+            | Yugen | SlowShadow | LegacyShadow | SlowVault => false,
             Nu5 | Nu6 | Nu6_1 | Nu6_2 => true,
             #[cfg(zcash_unstable = "nu7")]
             BranchId::Nu7 => true,
@@ -1104,6 +1120,9 @@ mod tests {
         assert!(BranchId::try_from(1).is_err());
         assert_eq!(BranchId::try_from(0x6d5b_7a31), Ok(BranchId::Vault));
         assert_eq!(u32::from(BranchId::Vault), 0x6d5b_7a31);
+        assert_eq!(BranchId::try_from(0x5947_4e30), Ok(BranchId::Yugen));
+        assert_eq!(u32::from(BranchId::Yugen), 0x5947_4e30);
+        assert!(!BranchId::Yugen.has_orchard());
     }
 
     #[test]
