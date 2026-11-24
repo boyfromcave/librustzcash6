@@ -32,7 +32,7 @@ use crate::consensus::{BlockHeight, NetworkType, NetworkUpgrade, Parameters};
 ///         nu6_1: Some(BlockHeight::from_u32(1)),
 ///         nu6_2: Some(BlockHeight::from_u32(1)),
 ///         vault: None,
-         yugen: None,
+///         yugen: None,
 ///     };
 ///     ```
 ///     
