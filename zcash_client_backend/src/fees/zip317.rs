@@ -333,6 +333,7 @@ mod tests {
             nu6_1: None,
             nu6_2: None,
             vault: at(NetworkUpgrade::Vault),
+            yugen: at(NetworkUpgrade::Yugen),
             #[cfg(zcash_unstable = "nu7")]
             nu7: None,
             #[cfg(zcash_unstable = "zfuture")]
