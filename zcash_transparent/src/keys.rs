@@ -777,13 +777,27 @@ mod tests {
             24, 25, 26, 27, 28, 29, 30, 31,
         ];
 
+        // The vectors are Zcash's (coin type 133); Ycash mainnet derives at coin type 347. Check the
+        // derivation against the vectors at 133 and that MAIN_NETWORK selects 347.
+        assert_eq!(MAIN_NETWORK.coin_type(), 347);
         for tv in test_vectors::bip_32() {
-            let account_sk = AccountPrivKey::from_seed(
-                &MAIN_NETWORK,
-                &seed,
-                zip32::AccountId::try_from(tv.account).unwrap(),
-            )
-            .unwrap();
+            let account = zip32::AccountId::try_from(tv.account).unwrap();
+            let at_coin_type = |coin_type: u32| {
+                bip32::ExtendedPrivateKey::new(&seed[..])
+                    .and_then(|k| k.derive_child(bip32::ChildNumber::new(44, true)?))
+                    .and_then(|k| k.derive_child(bip32::ChildNumber::new(coin_type, true)?))
+                    .and_then(|k| k.derive_child(bip32::ChildNumber::new(account.into(), true)?))
+                    .map(AccountPrivKey)
+                    .unwrap()
+            };
+            assert_eq!(
+                AccountPrivKey::from_seed(&MAIN_NETWORK, &seed, account)
+                    .unwrap()
+                    .to_account_pubkey()
+                    .serialize(),
+                at_coin_type(347).to_account_pubkey().serialize(),
+            );
+            let account_sk = at_coin_type(133);
             let account_pubkey = account_sk.to_account_pubkey();
 
             let mut key_bytes = [0u8; 65];

@@ -895,8 +895,19 @@ mod tests {
     use super::{Error, OutPoint, SignableInput, TransparentBuilder, TxOut};
     use crate::address::TransparentAddress;
     use secp256k1::{Message, Secp256k1, SecretKey};
-    use zcash_address::ZcashAddress;
     use zcash_protocol::value::Zatoshis;
+
+    /// The P2PKH address of upstream's tests, Zcash testnet `tmNUFAr71YAW3eXetm8fhx7k8zpUJYQiKZP`.
+    /// This library parses Ycash address encodings only (a Zcash string is `NotZcash`), so the
+    /// address is taken from its Base58Check payload (two-byte prefix 0x1d25, then the hash).
+    fn zcash_test_taddr() -> TransparentAddress {
+        let raw = bs58::decode("tmNUFAr71YAW3eXetm8fhx7k8zpUJYQiKZP")
+            .with_check(None)
+            .into_vec()
+            .unwrap();
+        assert_eq!(&raw[..2], &[0x1d, 0x25]);
+        TransparentAddress::PublicKeyHash(raw[2..].try_into().unwrap())
+    }
 
     // Helper that takes a key to create distinct inputs.
     fn new_p2pkh_spend_with_key(
@@ -918,13 +929,7 @@ mod tests {
 
     #[test]
     fn append_and_finalize_signatures() {
-        let addr_str = "tmNUFAr71YAW3eXetm8fhx7k8zpUJYQiKZP";
-        let generic_addr: ZcashAddress = addr_str
-            .parse()
-            .expect("Test address string should be valid");
-        let taddr: TransparentAddress = generic_addr
-            .convert()
-            .expect("Conversion to TransparentAddress should succeed");
+        let taddr = zcash_test_taddr();
 
         // Create two inputs with corresponding secret keys for signing
         let (sk1, pk1, coin1, utxo1) = new_p2pkh_spend_with_key([1; 32]);
@@ -1129,9 +1134,7 @@ mod tests {
     fn apply_signatures_p2sh() {
         use super::TransparentSigningSet;
 
-        let addr_str = "tmNUFAr71YAW3eXetm8fhx7k8zpUJYQiKZP";
-        let taddr: TransparentAddress =
-            addr_str.parse::<ZcashAddress>().unwrap().convert().unwrap();
+        let taddr: TransparentAddress = zcash_test_taddr();
 
         let (sks, redeem_script, coin, utxo) = new_p2sh_2of2_spend([1; 32], [2; 32]);
 
@@ -1163,9 +1166,7 @@ mod tests {
     fn apply_signatures_p2sh_missing_key() {
         use super::TransparentSigningSet;
 
-        let addr_str = "tmNUFAr71YAW3eXetm8fhx7k8zpUJYQiKZP";
-        let taddr: TransparentAddress =
-            addr_str.parse::<ZcashAddress>().unwrap().convert().unwrap();
+        let taddr: TransparentAddress = zcash_test_taddr();
 
         let (sks, redeem_script, coin, utxo) = new_p2sh_2of2_spend([1; 32], [2; 32]);
 

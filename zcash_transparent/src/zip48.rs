@@ -371,18 +371,41 @@ pub enum FullViewingKeyError {
 
 #[cfg(test)]
 mod tests {
-    use alloc::string::ToString;
     use alloc::vec::Vec;
 
     use bip32::Prefix;
-    use zcash_protocol::consensus::{MainNetwork, Network, Parameters};
+    use zcash_protocol::consensus::{MainNetwork, Network, NetworkConstants};
     use zip32::AccountId;
 
     use crate::{
+        address::TransparentAddress,
         keys::NonHardenedChildIndex,
         test_vectors::zip_0048::TEST_VECTORS,
         zip48::{AccountPrivKey, AccountPubKey, FullViewingKey},
     };
+
+    // The examples and vectors are Zcash's: coin type 133 (mainnet) or 1 (testnet), and Zcash
+    // address strings, which this library does not parse (it encodes Ycash). So the keys are
+    // derived at the vector's coin type and an address is compared by its Base58Check payload.
+    const ZCASH_MAINNET_COIN_TYPE: u32 = 133;
+
+    fn zcash_p2sh(addr: &str) -> TransparentAddress {
+        let raw = bs58::decode(addr).with_check(None).into_vec().unwrap();
+        // t3 (mainnet) is 0x1cbd, t2 (testnet) 0x1cba.
+        assert!(
+            raw[..2] == [0x1c, 0xbd] || raw[..2] == [0x1c, 0xba],
+            "{addr}"
+        );
+        TransparentAddress::ScriptHash(raw[2..].try_into().unwrap())
+    }
+
+    #[test]
+    fn ycash_coin_type() {
+        assert_eq!(MainNetwork.coin_type(), 347);
+        let a = AccountPrivKey::from_seed(&MainNetwork, &[1; 32], AccountId::ZERO).unwrap();
+        let b = AccountPrivKey::from_seed_with_coin_type(&[1; 32], 347, AccountId::ZERO).unwrap();
+        assert_eq!(a.to_account_pubkey(), b.to_account_pubkey());
+    }
 
     #[test]
     fn zip_48_example() {
@@ -392,9 +415,13 @@ mod tests {
         let key_info = seeds
             .iter()
             .map(|seed| {
-                AccountPrivKey::from_seed(&params, seed, AccountId::ZERO)
-                    .unwrap()
-                    .to_account_pubkey()
+                AccountPrivKey::from_seed_with_coin_type(
+                    seed,
+                    ZCASH_MAINNET_COIN_TYPE,
+                    AccountId::ZERO,
+                )
+                .unwrap()
+                .to_account_pubkey()
             })
             .collect();
 
@@ -418,10 +445,8 @@ mod tests {
                     zip32::Scope::External,
                     NonHardenedChildIndex::const_from_index(i)
                 )
-                .0
-                .to_zcash_address(params.network_type())
-                .to_string(),
-                addr,
+                .0,
+                zcash_p2sh(addr),
             );
         }
     }
@@ -440,18 +465,23 @@ mod tests {
             .collect::<Vec<_>>();
 
         for tv in TEST_VECTORS {
-            let (params, xprv_prefix, xpub_prefix) = match tv.network {
-                "mainnet" => (Network::MainNetwork, Prefix::XPRV, Prefix::XPUB),
-                "testnet" => (Network::TestNetwork, Prefix::TPRV, Prefix::TPUB),
+            let (params, coin_type, xprv_prefix, xpub_prefix) = match tv.network {
+                "mainnet" => (
+                    Network::MainNetwork,
+                    ZCASH_MAINNET_COIN_TYPE,
+                    Prefix::XPRV,
+                    Prefix::XPUB,
+                ),
+                "testnet" => (Network::TestNetwork, 1, Prefix::TPRV, Prefix::TPUB),
                 _ => unreachable!(),
             };
 
             let privkeys = (0..tv.key_information_vector.len())
                 .zip(&seeds)
                 .map(|(_, seed)| {
-                    AccountPrivKey::from_seed(
-                        &params,
+                    AccountPrivKey::from_seed_with_coin_type(
                         seed,
+                        coin_type,
                         zip32::AccountId::try_from(tv.account).unwrap(),
                     )
                     .unwrap()
@@ -479,9 +509,11 @@ mod tests {
             );
 
             for (key, expected) in fvk.key_info.iter().zip(tv.key_information_vector) {
+                // A key whose path names another coin type than the network's is refused: so the
+                // Zcash mainnet keys (133') do not parse for Ycash mainnet (347').
                 assert_eq!(
                     AccountPubKey::parse_key_info_expression(expected, &params).as_ref(),
-                    Some(key),
+                    (coin_type == params.coin_type()).then_some(key),
                 );
                 assert_eq!(&key.key_info_expression(&params), expected);
             }
@@ -502,27 +534,23 @@ mod tests {
 
             for (i, address) in tv.external_addresses {
                 assert_eq!(
-                    &fvk.derive_address(
+                    fvk.derive_address(
                         zip32::Scope::External,
                         NonHardenedChildIndex::const_from_index(*i)
                     )
-                    .0
-                    .to_zcash_address(params.network_type())
-                    .to_string(),
-                    address,
+                    .0,
+                    zcash_p2sh(address),
                 )
             }
 
             for (i, address) in tv.change_addresses {
                 assert_eq!(
-                    &fvk.derive_address(
+                    fvk.derive_address(
                         zip32::Scope::Internal,
                         NonHardenedChildIndex::const_from_index(*i)
                     )
-                    .0
-                    .to_zcash_address(params.network_type())
-                    .to_string(),
-                    address,
+                    .0,
+                    zcash_p2sh(address),
                 )
             }
         }
