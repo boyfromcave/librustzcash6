@@ -2,9 +2,10 @@ name: GitHub Actions Security Analysis with zizmor 🌈
 
 on:
   push:
-    branches: ["main", "upgrade/vault"]
+    branches: ["main", "upgrade/vault", "upgrade/yugen"]
   pull_request:
     branches: ["**"]
+  workflow_dispatch:
 
 permissions: {}
 

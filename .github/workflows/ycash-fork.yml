@@ -24,6 +24,7 @@ on:
   push:
     branches: &fork-branches
       - upgrade/vault
+      - upgrade/yugen
       - harden/yellowback
       - feature/yellowback
   pull_request:
@@ -101,20 +102,11 @@ jobs:
         if: ${{ !cancelled() }}
         run: cargo test --locked -p zcash_primitives --features "$PRIMITIVES_FEATURES"
       - name: zcash_transparent (transparent-inputs, which its builder and key tests need)
-        # Six upstream tests fail identically at the pin (librustzcash6-legacy ec525fae, "Adapt tests to
-        # Ycash parameters"): Zcash BIP-32 / ZIP-48 vectors and P2SH builder cases the fork's Ycash
-        # parameters change. They are a baseline defect of the upstream fork (to report to it), not of
-        # the Vault delta, so they are skipped by exact name; every other test must pass.
+        # Every test runs: the six that failed at the pin (librustzcash6-legacy ec525fae) on Zcash
+        # BIP-32 / ZIP-48 vectors and P2SH builder cases now derive the Zcash vectors at their own
+        # coin type and check Ycash's coin type 347 separately (ecf5f16d), so none is skipped.
         if: ${{ !cancelled() }}
-        run: >-
-          cargo test --locked -p zcash_transparent --features transparent-inputs --
-          --exact
-          --skip builder::tests::append_and_finalize_signatures
-          --skip builder::tests::apply_signatures_p2sh
-          --skip builder::tests::apply_signatures_p2sh_missing_key
-          --skip keys::tests::bip_32_test_vectors
-          --skip zip48::tests::zip_48_example
-          --skip zip48::tests::test_vectors
+        run: cargo test --locked -p zcash_transparent --features transparent-inputs
       - name: zcash_address, zcash_encoding, f4jumble
         if: ${{ !cancelled() }}
         run: cargo test --locked -p zcash_address -p zcash_encoding -p f4jumble
