@@ -283,13 +283,17 @@ impl TxVersion {
             #[cfg(zcash_unstable = "nu7")]
             TxVersion::V6 => match consensus_branch_id {
                 Sprout | Overwinter | Sapling | Ycash | Blossom | Heartwood | Canopy | Nu5
-                | Nu6 | Nu6_1 | Nu6_2 | Vault | Yugen | SlowShadow | LegacyShadow | SlowVault => false,
+                | Nu6 | Nu6_1 | Nu6_2 | Vault | Yugen | SlowShadow | LegacyShadow | SlowVault => {
+                    false
+                }
                 Nu7 => true, // ZIP 230 or ZIP 248, whichever is chosen for activation
             },
             #[cfg(zcash_unstable = "zfuture")]
             TxVersion::ZFuture => match consensus_branch_id {
                 Sprout | Overwinter | Sapling | Ycash | Blossom | Heartwood | Canopy | Nu5
-                | Nu6 | Nu6_1 | Nu6_2 | Vault | Yugen | SlowShadow | LegacyShadow | SlowVault => false,
+                | Nu6 | Nu6_1 | Nu6_2 | Vault | Yugen | SlowShadow | LegacyShadow | SlowVault => {
+                    false
+                }
                 ZFuture => true,
             },
         }
